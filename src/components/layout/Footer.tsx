@@ -48,7 +48,7 @@ export function Footer() {
         {/* Social */}
         <div className="flex justify-center gap-6 mb-12">
           <a
-            href="https://instagram.com/almawear"
+            href="https://www.instagram.com/_alma_wear"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-[var(--color-accent)] transition-colors"
@@ -57,7 +57,7 @@ export function Footer() {
             <Instagram size={20} />
           </a>
           <a
-            href="https://facebook.com/almawear"
+            href="https://www.facebook.com/AlMaDeals"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-[var(--color-accent)] transition-colors"
