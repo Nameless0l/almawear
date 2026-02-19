@@ -17,7 +17,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://almawear.cm"),
+  metadataBase: new URL("https://almawear.vercel.app"),
   title: {
     default: "Alma Wear — Mode africaine contemporaine | Douala, Cameroun",
     template: "%s | Alma Wear",
