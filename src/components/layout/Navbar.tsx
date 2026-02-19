@@ -43,7 +43,7 @@ export function Navbar() {
             alt="Alma Wear"
             width={40}
             height={40}
-            className={`transition-all duration-300 ${scrolled ? "" : "brightness-0 invert"}`}
+            className={`transition-all duration-300 ${scrolled ? "" : "invert"}`}
           />
           ALMA WEAR
         </Link>

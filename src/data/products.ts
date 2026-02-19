@@ -78,7 +78,7 @@ export const products: Product[] = [
     category: "ensemble",
     colors: ["Terre de Sienne"],
     sizes: ["S", "M", "L", "XL", "Sur mesure"],
-    images: ["/images/products/ensemble-terre-sienne-1.png"],
+    images: ["/images/products/_alma_wear_1771499218303.jpeg"],
     featured: true,
     isNew: true,
     material: "Coton premium",

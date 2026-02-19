@@ -6,8 +6,15 @@ import { AnimatedSection } from "@/components/ui/AnimatedSection";
 
 export function WhatsAppBanner() {
   return (
-    <section className="py-20 bg-[var(--color-accent)]">
-      <div className="max-w-4xl mx-auto px-6 text-center">
+    <section className="relative py-20 overflow-hidden">
+      {/* Background image */}
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('/images/hero/lookbook-image.png')" }}
+      />
+      <div className="absolute inset-0 bg-[var(--color-accent)]/85" />
+
+      <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
         <AnimatedSection>
           <h2 className="font-[family-name:var(--font-cormorant)] text-3xl md:text-4xl font-light text-white mb-4">
             Une question ? Une commande ?

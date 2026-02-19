@@ -21,7 +21,7 @@ export function Footer() {
               alt="Alma Wear"
               width={50}
               height={50}
-              className="brightness-0 invert"
+              className="invert"
             />
             <h2 className="font-[family-name:var(--font-cormorant)] text-3xl font-light tracking-widest text-white">
               ALMA WEAR

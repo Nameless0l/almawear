@@ -4,11 +4,12 @@ import Image from "next/image";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 
 const lookbookImages = [
-  { src: "/images/hero/lookbook-1.jpg", alt: "Lookbook Alma Wear 1", span: "col-span-2 row-span-2" },
-  { src: "/images/hero/lookbook-2.jpg", alt: "Lookbook Alma Wear 2", span: "" },
-  { src: "/images/hero/lookbook-3.jpg", alt: "Lookbook Alma Wear 3", span: "" },
-  { src: "/images/hero/lookbook-4.jpg", alt: "Lookbook Alma Wear 4", span: "" },
-  { src: "/images/hero/lookbook-5.jpg", alt: "Lookbook Alma Wear 5", span: "col-span-2" },
+  { src: "/images/hero/_alma_wear_1771498601526.jpeg", alt: "Lookbook Alma Wear 1", span: "col-span-2 row-span-2" },
+  { src: "/images/hero/lookbook-2.jpeg", alt: "Lookbook Alma Wear 2", span: "col-span-2" },
+  { src: "/images/hero/lookbook-image.png", alt: "Lookbook Alma Wear 2", span: "" },
+  { src: "/images/hero/lookbook-3.png", alt: "Lookbook Alma Wear 3", span: "" },
+  { src: "/images/hero/lookbook-4.png", alt: "Lookbook Alma Wear 4", span: "" },
+  { src: "/images/hero/lookbook-5.png", alt: "Lookbook Alma Wear 5", span: "col-span-2" },
 ];
 
 export function Lookbook() {
