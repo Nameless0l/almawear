@@ -35,8 +35,14 @@ export const metadata: Metadata = {
     title: "Alma Wear — Mode africaine contemporaine",
     description:
       "Des créations uniques, confectionnées avec soin à Douala, Cameroun.",
-    images: ["/images/og-image.jpg"],
     locale: "fr_FR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Alma Wear — Mode africaine contemporaine",
+    description:
+      "Des créations uniques, confectionnées avec soin à Douala, Cameroun.",
   },
 };
 
