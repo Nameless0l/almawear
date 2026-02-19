@@ -20,65 +20,58 @@ export default async function OgImage() {
           width: "100%",
           height: "100%",
           display: "flex",
+          flexDirection: "column",
           position: "relative",
           backgroundColor: "#FAFAF8",
         }}
       >
-        {/* Product image — right side */}
-        <img
-          src={base64Image}
-          width={500}
-          height={630}
-          style={{
-            position: "absolute",
-            right: 0,
-            top: 0,
-            width: 500,
-            height: 630,
-            objectFit: "cover",
-          }}
-        />
-
-        {/* Gradient overlay on image */}
+        {/* Product image — top, large */}
         <div
           style={{
-            position: "absolute",
-            right: 0,
-            top: 0,
-            width: 500,
-            height: 630,
-            background: "linear-gradient(to right, #FAFAF8 0%, rgba(250,250,248,0.3) 100%)",
+            display: "flex",
+            width: "100%",
+            height: 400,
+            position: "relative",
+            overflow: "hidden",
           }}
-        />
+        >
+          <img
+            src={base64Image}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              objectPosition: "top center",
+            }}
+          />
+          {/* Gradient fade to bottom */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: 120,
+              background: "linear-gradient(to bottom, rgba(250,250,248,0) 0%, #FAFAF8 100%)",
+            }}
+          />
+        </div>
 
-        {/* Top accent line */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 6,
-            backgroundColor: "#C4A882",
-          }}
-        />
-
-        {/* Content — left side */}
+        {/* Text — bottom */}
         <div
           style={{
             display: "flex",
             flexDirection: "column",
+            alignItems: "center",
             justifyContent: "center",
-            paddingLeft: 80,
-            width: 750,
-            height: "100%",
-            gap: 20,
+            flex: 1,
+            gap: 10,
+            paddingBottom: 20,
           }}
         >
-          {/* Brand name */}
           <h1
             style={{
-              fontSize: 64,
+              fontSize: 52,
               fontWeight: 300,
               color: "#1A1714",
               letterSpacing: "0.15em",
@@ -88,19 +81,17 @@ export default async function OgImage() {
             ALMA WEAR
           </h1>
 
-          {/* Decorative line */}
           <div
             style={{
-              width: 60,
+              width: 50,
               height: 2,
               backgroundColor: "#C4A882",
             }}
           />
 
-          {/* Tagline */}
           <p
             style={{
-              fontSize: 30,
+              fontSize: 22,
               fontWeight: 300,
               fontStyle: "italic",
               color: "#7A7570",
@@ -110,33 +101,31 @@ export default async function OgImage() {
             L&apos;élégance à l&apos;africaine
           </p>
 
-          {/* Subtitle */}
           <p
             style={{
-              fontSize: 18,
-              color: "#7A7570",
+              fontSize: 14,
+              color: "#C4A882",
               letterSpacing: "0.2em",
               textTransform: "uppercase",
               margin: 0,
-              marginTop: 10,
+              marginTop: 5,
             }}
           >
-            Kaftans • Boubous • Ensembles
-          </p>
-
-          {/* Location */}
-          <p
-            style={{
-              fontSize: 16,
-              color: "#C4A882",
-              letterSpacing: "0.15em",
-              margin: 0,
-              marginTop: 20,
-            }}
-          >
-            Douala, Cameroun
+            Kaftans • Boubous • Ensembles — Douala, Cameroun
           </p>
         </div>
+
+        {/* Top accent line */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 5,
+            backgroundColor: "#C4A882",
+          }}
+        />
 
         {/* Bottom accent line */}
         <div
@@ -145,7 +134,7 @@ export default async function OgImage() {
             bottom: 0,
             left: 0,
             right: 0,
-            height: 6,
+            height: 5,
             backgroundColor: "#C4A882",
           }}
         />
