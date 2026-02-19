@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Instagram, Facebook } from "lucide-react";
 
 const footerLinks = [
@@ -14,9 +15,18 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-6 py-16">
         {/* Logo */}
         <div className="text-center mb-12">
-          <h2 className="font-[family-name:var(--font-cormorant)] text-3xl font-light tracking-widest text-white">
-            ALMA WEAR
-          </h2>
+          <div className="flex items-center justify-center gap-4 mb-3">
+            <Image
+              src="/logo.png"
+              alt="Alma Wear"
+              width={50}
+              height={50}
+              className="brightness-0 invert"
+            />
+            <h2 className="font-[family-name:var(--font-cormorant)] text-3xl font-light tracking-widest text-white">
+              ALMA WEAR
+            </h2>
+          </div>
           <p className="font-[family-name:var(--font-dm-sans)] text-sm text-white/50 mt-2 tracking-wide">
             L&apos;élégance à l&apos;africaine
           </p>

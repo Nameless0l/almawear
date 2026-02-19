@@ -58,7 +58,7 @@ export default function AProposPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               <div className="relative aspect-[4/5] overflow-hidden bg-[var(--color-surface)]">
                 <Image
-                  src="/images/hero/atelier.jpg"
+                  src="/images/hero/christ.png"
                   alt="Fondatrice Alma Wear"
                   fill
                   className="object-cover"

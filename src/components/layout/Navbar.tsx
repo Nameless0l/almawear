@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Menu, X } from "lucide-react";
 
 const links = [
@@ -30,13 +31,20 @@ export function Navbar() {
       }`}
     >
       <nav className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-        {/* Logo texte */}
+        {/* Logo + texte */}
         <Link
           href="/"
-          className={`font-[family-name:var(--font-cormorant)] text-2xl font-semibold tracking-wide transition-colors ${
+          className={`flex items-center gap-3 font-[family-name:var(--font-cormorant)] text-2xl font-semibold tracking-wide transition-colors ${
             scrolled ? "text-[var(--color-text)]" : "text-white"
           }`}
         >
+          <Image
+            src="/logo.png"
+            alt="Alma Wear"
+            width={40}
+            height={40}
+            className={`transition-all duration-300 ${scrolled ? "" : "brightness-0 invert"}`}
+          />
           ALMA WEAR
         </Link>
 

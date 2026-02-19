@@ -1,23 +1,50 @@
 "use client";
 
-import Image from "next/image";
+import { useRef, useState, useEffect } from "react";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 
 export function BrandStory() {
+  const videoRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.2 }
+    );
+    if (videoRef.current) observer.observe(videoRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section className="py-24 bg-[var(--color-surface)]">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          {/* Image */}
+          {/* Vidéo Facebook Reel — chargé au scroll */}
           <AnimatedSection>
-            <div className="relative aspect-[4/5] overflow-hidden bg-[var(--color-border)]">
-              <Image
-                src="/images/hero/atelier.jpg"
-                alt="Atelier Alma Wear à Douala"
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 50vw"
-              />
+            <div
+              ref={videoRef}
+              className="relative aspect-[267/476] overflow-hidden bg-[var(--color-border)] mx-auto max-w-[320px] lg:max-w-none"
+            >
+              {isVisible ? (
+                <iframe
+                  src="https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Freel%2F896264929932502%2F&show_text=false&width=267&t=0"
+                  className="w-full h-full border-none"
+                  scrolling="no"
+                  allowFullScreen
+                  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                  title="Alma Wear — Reel Facebook"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <div className="w-10 h-10 border-2 border-[var(--color-accent)] border-t-transparent rounded-full animate-spin" />
+                </div>
+              )}
             </div>
           </AnimatedSection>
 

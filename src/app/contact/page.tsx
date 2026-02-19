@@ -41,7 +41,15 @@ export default function ContactPage() {
 
           {/* WhatsApp CTA */}
           <AnimatedSection delay={0.1} className="mb-20">
-            <div className="bg-[var(--color-surface)] p-10 md:p-14 text-center">
+            <div className="relative overflow-hidden p-10 md:p-14 text-center">
+              {/* Background image */}
+              <div
+                className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                style={{ backgroundImage: "url('/images/products/kaftan-blanc-gris-1.png')" }}
+              />
+              <div className="absolute inset-0 bg-[var(--color-bg)]/85 backdrop-blur-sm" />
+              {/* Content */}
+              <div className="relative z-10">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#25D366] mb-6">
                 <MessageCircle size={28} className="text-white" />
               </div>
@@ -62,6 +70,7 @@ export default function ContactPage() {
                 <MessageCircle size={20} />
                 Ouvrir WhatsApp
               </a>
+              </div>
             </div>
           </AnimatedSection>
 
@@ -76,7 +85,7 @@ export default function ContactPage() {
                   </h3>
                 </div>
                 <p className="font-[family-name:var(--font-dm-sans)] text-[var(--color-text-muted)]">
-                  +237 XXX XXX XXX
+                    {process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "+33759523398"}
                 </p>
               </div>
             </AnimatedSection>
