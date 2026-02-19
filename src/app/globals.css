@@ -1,26 +1,63 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-cormorant);
+  --font-body: var(--font-dm-sans);
+
+  --color-alma-bg: #FAFAF8;
+  --color-alma-surface: #F2F0EC;
+  --color-alma-text: #1A1714;
+  --color-alma-muted: #7A7570;
+  --color-alma-accent: #C4A882;
+  --color-alma-border: #E5E1DA;
+  --color-alma-dark: #0F0D0C;
+  --color-alma-white: #FFFFFF;
+
+  --animate-fade-up: fadeUp 0.6s ease forwards;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
+:root {
+  --color-bg: #FAFAF8;
+  --color-surface: #F2F0EC;
+  --color-text: #1A1714;
+  --color-text-muted: #7A7570;
+  --color-accent: #C4A882;
+  --color-border: #E5E1DA;
+  --color-dark: #0F0D0C;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body), sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Hide scrollbar for cleaner look */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent);
 }
