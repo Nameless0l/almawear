@@ -9,6 +9,7 @@ import { MessageCircle } from "lucide-react";
 import { Product } from "@/data/products";
 import { getProductOrderLink } from "@/lib/whatsapp";
 import { ProductCard } from "./ProductCard";
+import { useLanguage } from "@/lib/i18n";
 
 interface ProductDetailProps {
   product: Product;
@@ -20,6 +21,7 @@ export function ProductDetail({ product, similarProducts }: ProductDetailProps) 
   const [selectedColor, setSelectedColor] = useState<string>(
     product.colors[0] || ""
   );
+  const { t } = useLanguage();
 
   const orderLink = getProductOrderLink(
     product.name,
@@ -61,7 +63,7 @@ export function ProductDetail({ product, similarProducts }: ProductDetailProps) 
               />
               {product.isNew && (
                 <span className="absolute top-4 left-4 bg-[var(--color-dark)] text-white text-xs tracking-widest uppercase px-4 py-1.5 font-[family-name:var(--font-dm-sans)]">
-                  Nouveau
+                  {t("product.new")}
                 </span>
               )}
             </div>
@@ -94,7 +96,7 @@ export function ProductDetail({ product, similarProducts }: ProductDetailProps) 
             {product.colors.length > 0 && (
               <div className="mb-6">
                 <p className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--color-text)] mb-3">
-                  Couleur
+                  {t("product.color")}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {product.colors.map((color) => (
@@ -117,7 +119,7 @@ export function ProductDetail({ product, similarProducts }: ProductDetailProps) 
             {/* Sizes */}
             <div className="mb-8">
               <p className="font-[family-name:var(--font-dm-sans)] text-sm font-medium text-[var(--color-text)] mb-3">
-                Taille
+                {t("product.sizes")}
               </p>
               <div className="flex flex-wrap gap-2">
                 {product.sizes.map((size) => (
@@ -145,7 +147,7 @@ export function ProductDetail({ product, similarProducts }: ProductDetailProps) 
               aria-label={`Commander ${product.name} sur WhatsApp`}
             >
               <MessageCircle size={20} />
-              Commander sur WhatsApp
+              {t("product.orderWhatsApp")}
             </a>
 
             {/* Product details */}
@@ -153,7 +155,7 @@ export function ProductDetail({ product, similarProducts }: ProductDetailProps) 
               <div className="flex items-center gap-3 text-[var(--color-text-muted)]">
                 <Sparkles size={16} />
                 <span className="font-[family-name:var(--font-dm-sans)] text-sm">
-                  Matière : {product.material}
+                  {t("product.material")} : {product.material}
                 </span>
               </div>
               <div className="flex items-center gap-3 text-[var(--color-text-muted)]">
@@ -165,7 +167,7 @@ export function ProductDetail({ product, similarProducts }: ProductDetailProps) 
               <div className="flex items-center gap-3 text-[var(--color-text-muted)]">
                 <Ruler size={16} />
                 <span className="font-[family-name:var(--font-dm-sans)] text-sm">
-                  Taille sur mesure disponible
+                  {t("product.customSize")}
                 </span>
               </div>
             </div>
@@ -182,7 +184,7 @@ export function ProductDetail({ product, similarProducts }: ProductDetailProps) 
                 Suggestions
               </p>
               <h2 className="font-[family-name:var(--font-cormorant)] text-3xl md:text-4xl font-light text-[var(--color-text)]">
-                Vous aimerez aussi
+                {t("product.alsoLike")}
               </h2>
               <div className="w-12 h-[1px] bg-[var(--color-accent)] mx-auto mt-6" />
             </div>

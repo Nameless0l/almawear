@@ -4,14 +4,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { Product } from "@/data/products";
 import { getProductOrderLink } from "@/lib/whatsapp";
+import { useLanguage } from "@/lib/i18n";
 
 export function ProductCard({ product }: { product: Product }) {
+  const { t } = useLanguage();
   return (
     <article className="group relative overflow-hidden">
       {/* Badge Nouveau */}
       {product.isNew && (
         <span className="absolute top-3 left-3 z-10 bg-[var(--color-dark)] text-white text-xs tracking-widest uppercase px-3 py-1 font-[family-name:var(--font-dm-sans)]">
-          Nouveau
+          {t("product.new")}
         </span>
       )}
 
@@ -50,7 +52,7 @@ export function ProductCard({ product }: { product: Product }) {
             className="font-[family-name:var(--font-dm-sans)] text-xs tracking-widest uppercase border border-[var(--color-text)] px-4 py-2 hover:bg-[var(--color-text)] hover:text-white transition-all duration-200"
             aria-label={`Commander ${product.name}`}
           >
-            Commander
+            {t("product.order")}
           </a>
         </div>
       </div>

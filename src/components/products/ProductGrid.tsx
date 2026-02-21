@@ -4,9 +4,16 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { products, categories } from "@/data/products";
 import { ProductCard } from "./ProductCard";
+import { useLanguage } from "@/lib/i18n";
 
 export function ProductGrid() {
   const [activeCategory, setActiveCategory] = useState("all");
+  const { t } = useLanguage();
+
+  const translatedCategories = categories.map((cat) => ({
+    ...cat,
+    label: t(`categories.${cat.value === "all" ? "all" : cat.value}`),
+  }));
 
   const filtered =
     activeCategory === "all"
@@ -17,7 +24,7 @@ export function ProductGrid() {
     <div>
       {/* Category filters */}
       <div className="flex justify-center gap-6 mb-16 flex-wrap">
-        {categories.map((cat) => (
+        {translatedCategories.map((cat) => (
           <button
             key={cat.value}
             onClick={() => setActiveCategory(cat.value)}

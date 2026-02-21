@@ -3,18 +3,20 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X } from "lucide-react";
-
-const links = [
-  { href: "/", label: "Accueil" },
-  { href: "/collections", label: "Collections" },
-  { href: "/a-propos", label: "À Propos" },
-  { href: "/contact", label: "Contact" },
-];
+import { Menu, X, Globe } from "lucide-react";
+import { useLanguage } from "@/lib/i18n";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const { locale, setLocale, t } = useLanguage();
+
+  const links = [
+    { href: "/", label: t("nav.home") },
+    { href: "/collections", label: t("nav.collections") },
+    { href: "/a-propos", label: t("nav.about") },
+    { href: "/contact", label: t("nav.contact") },
+  ];
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -49,7 +51,7 @@ export function Navbar() {
         </Link>
 
         {/* Navigation desktop */}
-        <ul className="hidden md:flex gap-8 font-[family-name:var(--font-dm-sans)] text-sm tracking-widest uppercase">
+        <ul className="hidden md:flex items-center gap-8 font-[family-name:var(--font-dm-sans)] text-sm tracking-widest uppercase">
           {links.map((link) => (
             <li key={link.href}>
               <Link
@@ -62,6 +64,18 @@ export function Navbar() {
               </Link>
             </li>
           ))}
+          <li>
+            <button
+              onClick={() => setLocale(locale === "fr" ? "en" : "fr")}
+              className={`flex items-center gap-1.5 transition-colors hover:text-[var(--color-accent)] ${
+                scrolled ? "text-[var(--color-text)]" : "text-white"
+              }`}
+              aria-label="Switch language"
+            >
+              <Globe size={14} />
+              {locale === "fr" ? "EN" : "FR"}
+            </button>
+          </li>
         </ul>
 
         {/* Menu burger mobile */}
@@ -96,6 +110,19 @@ export function Navbar() {
                 </Link>
               </li>
             ))}
+            <li>
+              <button
+                onClick={() => {
+                  setLocale(locale === "fr" ? "en" : "fr");
+                  setMenuOpen(false);
+                }}
+                className="flex items-center justify-center gap-2 text-[var(--color-text)] hover:text-[var(--color-accent)] transition-colors mx-auto"
+                aria-label="Switch language"
+              >
+                <Globe size={18} />
+                {locale === "fr" ? "English" : "Français"}
+              </button>
+            </li>
           </ul>
         </div>
       )}

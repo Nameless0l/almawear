@@ -2,10 +2,12 @@
 
 import { useRef, useState, useEffect } from "react";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
+import { useLanguage } from "@/lib/i18n";
 
 export function BrandStory() {
   const videoRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -52,37 +54,26 @@ export function BrandStory() {
           <AnimatedSection delay={0.2}>
             <div className="lg:pl-8">
               <p className="font-[family-name:var(--font-dm-sans)] text-sm tracking-[0.3em] uppercase text-[var(--color-text-muted)] mb-4">
-                Notre Histoire
+                {t("brand.subtitle")}
               </p>
               <h2 className="font-[family-name:var(--font-cormorant)] text-4xl md:text-5xl font-light text-[var(--color-text)] mb-8">
-                L&apos;art de la couture
+                {t("brand.title1")}
                 <br />
-                <em className="font-light">camerounaise</em>
+                <em className="font-light">{t("brand.title2")}</em>
               </h2>
 
               <div className="space-y-6 font-[family-name:var(--font-dm-sans)] text-[var(--color-text-muted)] leading-relaxed">
-                <p>
-                  Née au cœur de Douala, Alma Wear est le fruit d&apos;une passion
-                  profonde pour l&apos;artisanat textile africain. Chaque pièce est
-                  pensée comme une œuvre, mêlant savoir-faire ancestral et vision
-                  contemporaine de la mode.
-                </p>
-                <p>
-                  Nos créations s&apos;adressent à la femme moderne qui souhaite
-                  affirmer son identité avec élégance. Du choix des tissus à la
-                  dernière couture, chaque étape est réalisée à la main dans
-                  notre atelier de Douala.
-                </p>
+                <p>{t("brand.p1")}</p>
+                <p>{t("brand.p2")}</p>
               </div>
 
               {/* Citation */}
               <blockquote className="mt-10 pl-6 border-l-2 border-[var(--color-accent)]">
                 <p className="font-[family-name:var(--font-cormorant)] text-2xl font-light italic text-[var(--color-text)]">
-                  &ldquo;Chaque pièce raconte une histoire, celle de la femme qui
-                  la porte.&rdquo;
+                  &ldquo;{t("brand.quote")}&rdquo;
                 </p>
                 <cite className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--color-text-muted)] mt-3 block not-italic">
-                  — Fondatrice, Alma Wear
+                  {t("brand.author")}
                 </cite>
               </blockquote>
             </div>

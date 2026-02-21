@@ -11,7 +11,7 @@ export function getProductOrderLink(
   size?: string,
   color?: string,
 ): string {
-  const message = `Bonjour Alma Wear ! 👋\n\nJe suis intéressé(e) par :\n*${productName}*${size ? `\nTaille : ${size}` : ""}${color ? `\nCouleur : ${color}` : ""}\n\nPourriez-vous me donner plus d'informations ? Merci 🌸`;
+  const message = `Bonjour Alma Wear ! 👋\n\nJe suis intéressé(e) par :\n*${productName}*${size ? `\nTaille : ${size}` : ""}${color ? `\nCouleur : ${color}` : ""}\n\nComment faire pour l'avoir ? Pourriez-vous me livrer / expédier ? Merci 🌸`;
   return getWhatsAppLink(message);
 }
 

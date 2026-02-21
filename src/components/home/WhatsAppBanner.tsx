@@ -3,8 +3,11 @@
 import { MessageCircle } from "lucide-react";
 import { getGeneralContactLink } from "@/lib/whatsapp";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
+import { useLanguage } from "@/lib/i18n";
 
 export function WhatsAppBanner() {
+  const { t } = useLanguage();
+
   return (
     <section className="relative py-20 overflow-hidden">
       {/* Background image */}
@@ -17,11 +20,10 @@ export function WhatsAppBanner() {
       <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
         <AnimatedSection>
           <h2 className="font-[family-name:var(--font-cormorant)] text-3xl md:text-4xl font-light text-white mb-4">
-            Une question ? Une commande ?
+            {t("whatsappBanner.title")}
           </h2>
           <p className="font-[family-name:var(--font-dm-sans)] text-white/80 mb-10 max-w-lg mx-auto">
-            Commandez directement via WhatsApp ou posez-nous vos questions.
-            Nous vous répondons dans les 24h.
+            {t("whatsappBanner.description")}
           </p>
           <a
             href={getGeneralContactLink()}
@@ -31,7 +33,7 @@ export function WhatsAppBanner() {
             aria-label="Commander sur WhatsApp"
           >
             <MessageCircle size={22} />
-            Nous écrire sur WhatsApp
+            {t("whatsappBanner.cta")}
           </a>
         </AnimatedSection>
       </div>

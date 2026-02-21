@@ -6,9 +6,11 @@ import { motion } from "framer-motion";
 import { products } from "@/data/products";
 import { getProductOrderLink } from "@/lib/whatsapp";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
+import { useLanguage } from "@/lib/i18n";
 
 export function FeaturedProducts() {
   const featured = products.filter((p) => p.featured);
+  const { t } = useLanguage();
 
   return (
     <section className="py-24 px-6 bg-[var(--color-bg)]">
@@ -16,10 +18,10 @@ export function FeaturedProducts() {
         {/* Section header */}
         <AnimatedSection className="text-center mb-16">
           <p className="font-[family-name:var(--font-dm-sans)] text-sm tracking-[0.3em] uppercase text-[var(--color-text-muted)] mb-4">
-            Collection
+            {t("featured.subtitle")}
           </p>
           <h2 className="font-[family-name:var(--font-cormorant)] text-4xl md:text-5xl font-light text-[var(--color-text)]">
-            Nos Créations
+            {t("featured.title")}
           </h2>
           <div className="w-12 h-[1px] bg-[var(--color-accent)] mx-auto mt-6" />
         </AnimatedSection>
@@ -32,7 +34,7 @@ export function FeaturedProducts() {
                 {/* Badge */}
                 {product.isNew && (
                   <span className="absolute top-3 left-3 z-10 bg-[var(--color-dark)] text-white text-xs tracking-widest uppercase px-3 py-1 font-[family-name:var(--font-dm-sans)]">
-                    Nouveau
+                    {t("product.new")}
                   </span>
                 )}
 
@@ -71,7 +73,7 @@ export function FeaturedProducts() {
                       className="font-[family-name:var(--font-dm-sans)] text-xs tracking-widest uppercase border border-[var(--color-text)] px-4 py-2 hover:bg-[var(--color-text)] hover:text-white transition-all duration-200"
                       aria-label={`Commander ${product.name}`}
                     >
-                      Commander
+                      {t("featured.order")}
                     </a>
                   </div>
                 </div>

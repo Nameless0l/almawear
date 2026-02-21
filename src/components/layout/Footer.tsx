@@ -1,15 +1,19 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { Instagram, Facebook } from "lucide-react";
-
-const footerLinks = [
-  { href: "/", label: "Accueil" },
-  { href: "/collections", label: "Collections" },
-  { href: "/a-propos", label: "À Propos" },
-  { href: "/contact", label: "Contact" },
-];
+import { useLanguage } from "@/lib/i18n";
 
 export function Footer() {
+  const { t } = useLanguage();
+
+  const footerLinks = [
+    { href: "/", label: t("nav.home") },
+    { href: "/collections", label: t("nav.collections") },
+    { href: "/a-propos", label: t("nav.about") },
+    { href: "/contact", label: t("nav.contact") },
+  ];
   return (
     <footer className="bg-[var(--color-dark)] text-white/80">
       <div className="max-w-7xl mx-auto px-6 py-16">
@@ -28,7 +32,7 @@ export function Footer() {
             </h2>
           </div>
           <p className="font-[family-name:var(--font-dm-sans)] text-sm text-white/50 mt-2 tracking-wide">
-            L&apos;élégance à l&apos;africaine
+            {t("footer.tagline")}
           </p>
         </div>
 
@@ -70,10 +74,10 @@ export function Footer() {
         {/* Divider */}
         <div className="border-t border-white/10 pt-8 text-center">
           <p className="font-[family-name:var(--font-dm-sans)] text-xs text-white/40 tracking-wide">
-            Basée à Douala, Cameroun
+            {t("footer.location")}
           </p>
           <p className="font-[family-name:var(--font-dm-sans)] text-xs text-white/30 mt-2">
-            © {new Date().getFullYear()} Alma Wear. Tous droits réservés.
+            © {new Date().getFullYear()} Alma Wear. {t("footer.rights")}
           </p>
         </div>
       </div>

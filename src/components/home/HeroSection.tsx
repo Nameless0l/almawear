@@ -3,14 +3,16 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { getGeneralContactLink } from "@/lib/whatsapp";
+import { useLanguage } from "@/lib/i18n";
 
 export function HeroSection() {
+  const { t } = useLanguage();
   return (
     <section className="relative h-screen w-full overflow-hidden bg-[var(--color-dark)]">
       {/* Background image placeholder — replace with real hero image */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/images/hero/hero-main.jpg')" }}
+        style={{ backgroundImage: "url('/images/hero/_alma_wear_1771498601526.jpeg')" }}
       />
       {/* Fallback gradient if no image */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#1a1714]/60 via-[#1a1714]/30 to-[#1a1714]/70" />
@@ -22,7 +24,7 @@ export function HeroSection() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="font-[family-name:var(--font-dm-sans)] tracking-[0.3em] uppercase text-sm mb-4 opacity-80"
         >
-          Douala, Cameroun
+          {t("hero.location")}
         </motion.p>
 
         <motion.h1
@@ -31,7 +33,7 @@ export function HeroSection() {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="font-[family-name:var(--font-cormorant)] text-5xl md:text-7xl lg:text-8xl font-light italic mb-6"
         >
-          L&apos;élégance à l&apos;africaine
+          {t("hero.title")}
         </motion.h1>
 
         <motion.p
@@ -40,7 +42,7 @@ export function HeroSection() {
           transition={{ duration: 0.8, delay: 0.6 }}
           className="font-[family-name:var(--font-dm-sans)] text-lg font-light mb-10 max-w-md opacity-90"
         >
-          Des créations uniques, confectionnées avec soin pour la femme moderne
+          {t("hero.subtitle")}
         </motion.p>
 
         <motion.div
@@ -61,7 +63,7 @@ export function HeroSection() {
             rel="noopener noreferrer"
             className="font-[family-name:var(--font-dm-sans)] text-sm tracking-widest uppercase bg-[#25D366] text-white px-8 py-3 hover:bg-[#20BD5C] transition-all duration-300"
           >
-            Nous contacter
+            {t("hero.contact")}
           </a>
         </motion.div>
       </div>

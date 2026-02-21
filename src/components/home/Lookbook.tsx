@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
+import { useLanguage } from "@/lib/i18n";
 
 const lookbookImages = [
   { src: "/images/hero/_alma_wear_1771498601526.jpeg", alt: "Lookbook Alma Wear 1", span: "col-span-2 row-span-2" },
@@ -13,15 +14,17 @@ const lookbookImages = [
 ];
 
 export function Lookbook() {
+  const { t } = useLanguage();
+
   return (
     <section className="py-24 px-6 bg-[var(--color-bg)]">
       <div className="max-w-7xl mx-auto">
         <AnimatedSection className="text-center mb-16">
           <p className="font-[family-name:var(--font-dm-sans)] text-sm tracking-[0.3em] uppercase text-[var(--color-text-muted)] mb-4">
-            Inspiration
+            {t("lookbook.subtitle")}
           </p>
           <h2 className="font-[family-name:var(--font-cormorant)] text-4xl md:text-5xl font-light text-[var(--color-text)]">
-            Lookbook
+            {t("lookbook.title")}
           </h2>
           <div className="w-12 h-[1px] bg-[var(--color-accent)] mx-auto mt-6" />
         </AnimatedSection>
