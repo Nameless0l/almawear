@@ -77,6 +77,7 @@ export async function saveSettings(
       allowOverwrite: true,
       addRandomSuffix: false,
       contentType: "application/json",
+      cacheControlMaxAge: 1,
     });
 
     console.log(`[Settings] Saved → ${result.url}`);

@@ -43,19 +43,21 @@ export default function AdminProducts() {
     setConfirmDelete(null);
   }
 
+  const productCountLabel = products.length === 1 ? "produit" : "produits";
+
   return (
     <AdminGuard>
       <AdminSidebar />
-      <main className="flex-1 p-8 overflow-y-auto">
+      <main className="flex-1 min-w-0 p-4 pt-20 sm:p-6 sm:pt-24 md:p-8 md:pt-8 overflow-y-auto">
         <div className="max-w-5xl mx-auto">
           {/* Header */}
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
             <div>
               <h1 className="font-[family-name:var(--font-cormorant)] text-3xl font-light text-[var(--color-text)]">
                 Produits
               </h1>
               <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--color-text-muted)] mt-1">
-                {products.length} produit{products.length !== 1 ? "s" : ""} au catalogue
+                {products.length} {productCountLabel} au catalogue
               </p>
             </div>
             <Link
@@ -67,12 +69,14 @@ export default function AdminProducts() {
             </Link>
           </div>
 
-          {loading ? (
+          {loading && (
             <div className="flex items-center gap-2 text-[var(--color-text-muted)] font-[family-name:var(--font-dm-sans)] text-sm">
               <div className="w-4 h-4 border-2 border-[var(--color-accent)] border-t-transparent rounded-full animate-spin" />
               Chargement…
             </div>
-          ) : products.length === 0 ? (
+          )}
+
+          {!loading && products.length === 0 && (
             <div className="bg-white border border-[var(--color-border)] p-16 text-center">
               <p className="font-[family-name:var(--font-dm-sans)] text-[var(--color-text-muted)]">
                 Aucun produit. Commencez par en ajouter un !
@@ -84,9 +88,12 @@ export default function AdminProducts() {
                 <Plus size={14} /> Ajouter un produit
               </Link>
             </div>
-          ) : (
+          )}
+
+          {!loading && products.length > 0 && (
             <div className="bg-white border border-[var(--color-border)] overflow-hidden">
-              <table className="w-full">
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[760px]">
                 <thead>
                   <tr className="border-b border-[var(--color-border)] bg-[var(--color-surface)]">
                     <th className={th}>Produit</th>
@@ -206,7 +213,8 @@ export default function AdminProducts() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+                </table>
+              </div>
             </div>
           )}
         </div>

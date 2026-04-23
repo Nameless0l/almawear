@@ -18,9 +18,9 @@ function slugify(str: string) {
   return str
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+    .replaceAll(/[\u0300-\u036f]/g, "")
+    .replaceAll(/[^a-z0-9]+/g, "-")
+    .replaceAll(/^-+|-+$/g, "");
 }
 
 interface ProductFormProps {
@@ -28,7 +28,10 @@ interface ProductFormProps {
   mode: "create" | "edit";
 }
 
-export function ProductForm({ initial, mode }: ProductFormProps) {
+export function ProductForm({
+  initial,
+  mode,
+}: Readonly<ProductFormProps>) {
   const router = useRouter();
 
   const [form, setForm] = useState<Omit<Product, "id" | "slug">>({
@@ -71,7 +74,7 @@ export function ProductForm({ initial, mode }: ProductFormProps) {
     );
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
     setFeedback(null);
 
@@ -147,7 +150,7 @@ export function ProductForm({ initial, mode }: ProductFormProps) {
         </Field>
 
         {/* Price + Category */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="Prix (FCFA) *">
             <input
               type="number"
@@ -160,6 +163,7 @@ export function ProductForm({ initial, mode }: ProductFormProps) {
           </Field>
           <Field label="Catégorie *">
             <select
+              title="Catégorie du produit"
               value={form.category}
               onChange={(e) =>
                 set("category", e.target.value as Product["category"])
@@ -176,7 +180,7 @@ export function ProductForm({ initial, mode }: ProductFormProps) {
         </div>
 
         {/* Material + Care */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="Matière">
             <input
               type="text"
@@ -209,6 +213,8 @@ export function ProductForm({ initial, mode }: ProductFormProps) {
                 <button
                   type="button"
                   onClick={() => set("colors", form.colors.filter((x) => x !== c))}
+                  aria-label={`Retirer la couleur ${c}`}
+                  title={`Retirer la couleur ${c}`}
                   className="text-[var(--color-text-muted)] hover:text-red-500 ml-1"
                 >
                   <X size={12} />
@@ -221,7 +227,12 @@ export function ProductForm({ initial, mode }: ProductFormProps) {
               type="text"
               value={colorInput}
               onChange={(e) => setColorInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addColor())}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  addColor();
+                }
+              }}
               placeholder="Ex : Ivoire/Or — appuyer Entrée"
               className={`${inputCls} flex-1`}
             />
@@ -256,7 +267,7 @@ export function ProductForm({ initial, mode }: ProductFormProps) {
         </Field>
 
         {/* Toggles */}
-        <div className="flex gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <Toggle
             label="Mis en avant"
             sublabel="Affiché sur la page d'accueil"
@@ -286,11 +297,11 @@ export function ProductForm({ initial, mode }: ProductFormProps) {
         )}
 
         {/* Actions */}
-        <div className="flex gap-4">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <button
             type="submit"
             disabled={saving}
-            className="flex items-center gap-2 bg-[var(--color-dark)] text-white px-8 py-3 text-sm tracking-widest uppercase font-[family-name:var(--font-dm-sans)] hover:bg-[var(--color-accent)] transition-colors disabled:opacity-50"
+            className="flex items-center justify-center gap-2 bg-[var(--color-dark)] text-white px-6 sm:px-8 py-3 text-sm tracking-widest uppercase font-[family-name:var(--font-dm-sans)] hover:bg-[var(--color-accent)] transition-colors disabled:opacity-50"
           >
             {saving && <Loader2 size={16} className="animate-spin" />}
             {mode === "edit" ? "Mettre à jour" : "Créer le produit"}
@@ -298,7 +309,7 @@ export function ProductForm({ initial, mode }: ProductFormProps) {
           <button
             type="button"
             onClick={() => router.push("/admin/produits")}
-            className="px-8 py-3 text-sm tracking-widest uppercase font-[family-name:var(--font-dm-sans)] border border-[var(--color-border)] hover:bg-[var(--color-surface)] transition-colors"
+            className="px-6 sm:px-8 py-3 text-sm tracking-widest uppercase font-[family-name:var(--font-dm-sans)] border border-[var(--color-border)] hover:bg-[var(--color-surface)] transition-colors"
           >
             Annuler
           </button>
@@ -318,7 +329,10 @@ export function ProductForm({ initial, mode }: ProductFormProps) {
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({
+  label,
+  children,
+}: Readonly<{ label: string; children: React.ReactNode }>) {
   return (
     <div>
       <label className="block text-xs font-medium tracking-widest uppercase text-[var(--color-text-muted)] font-[family-name:var(--font-dm-sans)] mb-2">
@@ -334,12 +348,12 @@ function Toggle({
   sublabel,
   checked,
   onChange,
-}: {
+}: Readonly<{
   label: string;
   sublabel: string;
   checked: boolean;
   onChange: (v: boolean) => void;
-}) {
+}>) {
   return (
     <button
       type="button"

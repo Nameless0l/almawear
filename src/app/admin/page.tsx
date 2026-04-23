@@ -2,38 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ShoppingBag, Star, Sparkles, Users, Plus, ArrowRight, Database, Check, AlertCircle } from "lucide-react";
-import { AdminGuard, getAuthHeader } from "@/components/admin/AdminGuard";
+import { ShoppingBag, Star, Sparkles, Users, Plus, ArrowRight } from "lucide-react";
+import { AdminGuard } from "@/components/admin/AdminGuard";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { type Product } from "@/data/products";
 
 export default function AdminDashboard() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [seeding, setSeeding] = useState(false);
-  const [seedResult, setSeedResult] = useState<{ type: "success" | "error"; msg: string } | null>(null);
-
-  async function handleSeed() {
-    setSeeding(true);
-    setSeedResult(null);
-    try {
-      const res = await fetch("/api/products/seed", {
-        method: "POST",
-        headers: { authorization: getAuthHeader() },
-      });
-      const data = await res.json();
-      if (res.ok) {
-        const verif = data.verifyOk ? ` ✓ Vérifié (${data.verifySize} chars)` : " ⚠ Vérification échouée";
-        setSeedResult({ type: "success", msg: `${data.count} produits enregistrés.${verif}` });
-      } else {
-        setSeedResult({ type: "error", msg: data.error ?? "Erreur" });
-      }
-    } catch {
-      setSeedResult({ type: "error", msg: "Erreur réseau" });
-    } finally {
-      setSeeding(false);
-    }
-  }
 
   useEffect(() => {
     fetch("/api/products")
@@ -54,7 +30,7 @@ export default function AdminDashboard() {
   return (
     <AdminGuard>
       <AdminSidebar />
-      <main className="flex-1 p-8 overflow-y-auto">
+      <main className="flex-1 min-w-0 p-4 pt-20 sm:p-6 sm:pt-24 md:p-8 md:pt-8 overflow-y-auto">
         <div className="max-w-5xl mx-auto">
           {/* Header */}
           <div className="mb-10">
@@ -110,43 +86,6 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Seed Blob */}
-              <div className="bg-white border border-[var(--color-border)] p-6 mb-8">
-                <div className="flex items-start justify-between gap-4 flex-wrap">
-                  <div>
-                    <h2 className="font-[family-name:var(--font-dm-sans)] font-medium text-[var(--color-text)] mb-1 flex items-center gap-2">
-                      <Database size={16} className="text-[var(--color-accent)]" />
-                      Initialiser le catalogue
-                    </h2>
-                    <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--color-text-muted)] max-w-md">
-                      À faire une seule fois au démarrage : enregistre les produits actuels dans Blob pour que les modifications admin soient effectives sur le site.
-                    </p>
-                  </div>
-                  <button
-                    onClick={handleSeed}
-                    disabled={seeding}
-                    className="shrink-0 flex items-center gap-2 border border-[var(--color-accent)] text-[var(--color-accent)] px-5 py-2.5 text-sm font-[family-name:var(--font-dm-sans)] tracking-widest uppercase hover:bg-[var(--color-accent)] hover:text-white transition-colors disabled:opacity-50"
-                  >
-                    {seeding ? (
-                      <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                    ) : (
-                      <Database size={14} />
-                    )}
-                    {seeding ? "En cours…" : "Initialiser"}
-                  </button>
-                </div>
-                {seedResult && (
-                  <div className={`flex items-center gap-2 mt-4 px-4 py-3 text-sm font-[family-name:var(--font-dm-sans)] ${
-                    seedResult.type === "success"
-                      ? "bg-green-50 text-green-700 border border-green-200"
-                      : "bg-red-50 text-red-700 border border-red-200"
-                  }`}>
-                    {seedResult.type === "success" ? <Check size={14} /> : <AlertCircle size={14} />}
-                    {seedResult.msg}
-                  </div>
-                )}
-              </div>
-
               {/* Quick actions */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Link
@@ -188,12 +127,12 @@ function StatCard({
   label,
   value,
   accent,
-}: {
+}: Readonly<{
   icon: React.ElementType;
   label: string;
   value: number;
   accent?: boolean;
-}) {
+}>) {
   return (
     <div className={`bg-white border p-5 ${accent ? "border-[var(--color-accent)]" : "border-[var(--color-border)]"}`}>
       <div className="flex items-center justify-between mb-3">

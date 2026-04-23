@@ -52,6 +52,7 @@ export async function saveProducts(
       allowOverwrite: true,
       addRandomSuffix: false,
       contentType: "application/json",
+      cacheControlMaxAge: 1,
     });
 
     console.log(`[Products] Saved → ${result.url}`);
@@ -63,4 +64,4 @@ export async function saveProducts(
   }
 }
 
-export type { Product };
+export type { Product } from "@/data/products";

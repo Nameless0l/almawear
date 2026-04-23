@@ -124,7 +124,7 @@ export default function AdminContent() {
   return (
     <AdminGuard>
       <AdminSidebar />
-      <main className="flex-1 p-8 overflow-y-auto">
+      <main className="flex-1 min-w-0 p-4 pt-20 sm:p-6 sm:pt-24 md:p-8 md:pt-8 overflow-y-auto">
         <div className="max-w-4xl mx-auto space-y-12">
           {/* Header */}
           <div>
