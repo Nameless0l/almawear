@@ -11,7 +11,11 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin] = useState(
+    () =>
+      globalThis.window !== undefined &&
+      !!globalThis.window.sessionStorage.getItem("alma_admin_token"),
+  );
   const { locale, setLocale, t } = useLanguage();
   const pathname = usePathname();
 
@@ -25,6 +29,14 @@ export function Navbar() {
     { href: "/a-propos", label: t("nav.about") },
     { href: "/contact", label: t("nav.contact") },
   ];
+
+  const isLinkActive = (href: string) => {
+    if (href === "/") {
+      return pathname === "/";
+    }
+
+    return pathname.startsWith(href);
+  };
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
@@ -47,20 +59,35 @@ export function Navbar() {
   }, []);
 
   useEffect(() => {
-    setIsAdmin(!!sessionStorage.getItem("alma_admin_token"));
-  }, []);
+    if (menuOpen) {
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = "";
+      };
+    }
+
+    document.body.style.overflow = "";
+  }, [menuOpen]);
+
+  let headerStateClass = "h-20 bg-[var(--color-bg)] border-b border-[var(--color-border)]";
+  if (scrolled) {
+    headerStateClass = "h-16 bg-[var(--color-bg)]/95 backdrop-blur-sm shadow-sm";
+  } else if (isHome) {
+    headerStateClass = "h-24 bg-transparent";
+  }
+  const shouldHideHeader = hidden && menuOpen === false;
+  let headerVisibilityClass = "";
+  if (shouldHideHeader) {
+    headerVisibilityClass = "-translate-y-full";
+  }
+  let mobileActionTextClass = "text-[var(--color-text)]";
+  if (useWhiteText && menuOpen === false) {
+    mobileActionTextClass = "text-white";
+  }
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-40 flex items-center transition-all duration-300 ${
-        hidden && !menuOpen ? "-translate-y-full" : "translate-y-0"
-      } ${
-        scrolled
-          ? "h-16 bg-[var(--color-bg)]/95 backdrop-blur-sm shadow-sm"
-          : !isHome
-          ? "h-20 bg-[var(--color-bg)] border-b border-[var(--color-border)]"
-          : "h-24 bg-transparent"
-      }`}
+      className={`fixed top-0 left-0 right-0 z-40 flex items-center transition-all duration-300 ${headerVisibilityClass} ${headerStateClass}`}
     >
       <nav className="w-full max-w-7xl mx-auto px-6 flex items-center justify-between">
         {/* Logo */}
@@ -86,16 +113,18 @@ export function Navbar() {
         {/* Navigation desktop */}
         <ul className="hidden md:flex items-center gap-8 font-[family-name:var(--font-dm-sans)] text-sm tracking-widest uppercase">
           {links.map((link) => {
-            const isActive = link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
+            const isActive = isLinkActive(link.href);
+            let linkClass = "text-[var(--color-text)]";
+            if (isActive) {
+              linkClass = "border-b border-[var(--color-accent)] text-[var(--color-accent)]";
+            } else if (useWhiteText) {
+              linkClass = "text-white";
+            }
             return (
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className={`transition-colors hover:text-[var(--color-accent)] pb-0.5 ${
-                    isActive
-                      ? "border-b border-[var(--color-accent)] text-[var(--color-accent)]"
-                      : useWhiteText ? "text-white" : "text-[var(--color-text)]"
-                  }`}
+                  className={`transition-colors hover:text-[var(--color-accent)] pb-0.5 ${linkClass}`}
                 >
                   {link.label}
                 </Link>
@@ -128,29 +157,35 @@ export function Navbar() {
           )}
         </ul>
 
-        {/* Menu burger mobile */}
-        <button
-          className="md:hidden relative z-50"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Menu de navigation"
-        >
-          {menuOpen ? (
-            <X size={24} className="text-[var(--color-text)]" />
-          ) : (
-            <Menu
-              size={24}
-              className={useWhiteText ? "text-white" : "text-[var(--color-text)]"}
-            />
-          )}
-        </button>
+        {/* Actions mobile */}
+        <div className="md:hidden relative z-50 flex items-center gap-3">
+          <button
+            onClick={() => setLocale(locale === "fr" ? "en" : "fr")}
+            className={`flex items-center gap-1 text-sm tracking-widest uppercase transition-colors hover:text-[var(--color-accent)] ${mobileActionTextClass}`}
+            aria-label="Changer la langue"
+          >
+            <Globe size={14} />
+            {locale === "fr" ? "EN" : "FR"}
+          </button>
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Menu de navigation"
+          >
+            {menuOpen ? (
+              <X size={24} className="text-[var(--color-text)]" />
+            ) : (
+              <Menu size={24} className={mobileActionTextClass} />
+            )}
+          </button>
+        </div>
       </nav>
 
       {/* Menu mobile */}
       {menuOpen && (
-        <div className="md:hidden fixed inset-0 bg-[var(--color-bg)] z-40 flex items-center justify-center">
-          <ul className="flex flex-col gap-8 font-[family-name:var(--font-dm-sans)] text-lg tracking-widest uppercase text-center">
+        <div className="md:hidden fixed inset-0 top-0 z-40 bg-[var(--color-bg)]/100 pt-24 pb-8 px-6 overflow-y-auto">
+          <ul className="flex flex-col gap-8 font-[family-name:var(--font-dm-sans)] text-lg tracking-widest uppercase text-center min-h-full justify-start">
             {links.map((link) => {
-              const isActive = link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
+                const isActive = isLinkActive(link.href);
               return (
                 <li key={link.href}>
                   <Link
@@ -163,19 +198,6 @@ export function Navbar() {
                 </li>
               );
             })}
-            <li>
-              <button
-                onClick={() => {
-                  setLocale(locale === "fr" ? "en" : "fr");
-                  setMenuOpen(false);
-                }}
-                className="flex items-center justify-center gap-2 text-[var(--color-text)] hover:text-[var(--color-accent)] transition-colors mx-auto"
-                aria-label="Switch language"
-              >
-                <Globe size={18} />
-                {locale === "fr" ? "English" : "Français"}
-              </button>
-            </li>
             {isAdmin && (
               <li>
                 <Link

@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
 import { type Product } from "@/data/products";
 import { getProductOrderLink } from "@/lib/whatsapp";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { useLanguage } from "@/lib/i18n";
 
-export function FeaturedProducts({ products }: { products: Product[] }) {
+export function FeaturedProducts({
+  products,
+}: Readonly<{ products: Product[] }>) {
   const { t } = useLanguage();
 
   return (
@@ -54,7 +55,7 @@ export function FeaturedProducts({ products }: { products: Product[] }) {
                 {/* Info */}
                 <div className="pt-4 pb-6">
                   <Link href={`/produits/${product.slug}`}>
-                    <h3 className="font-[family-name:var(--font-cormorant)] text-lg font-light text-[var(--color-text)] hover:text-[var(--color-accent)] transition-colors">
+                    <h3 className="font-[family-name:var(--font-cormorant)] text-base sm:text-lg font-light text-[var(--color-text)] hover:text-[var(--color-accent)] transition-colors leading-5 sm:leading-tight h-10 sm:h-auto overflow-hidden">
                       {product.name}
                     </h3>
                   </Link>
@@ -65,16 +66,17 @@ export function FeaturedProducts({ products }: { products: Product[] }) {
                     <span className="font-[family-name:var(--font-dm-sans)] font-medium text-[var(--color-text)]">
                       {product.price.toLocaleString("fr-FR")} {product.currency}
                     </span>
-                    <a
+                 
+                  </div>
+                     <a
                       href={getProductOrderLink(product.name)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-[family-name:var(--font-dm-sans)] text-xs tracking-widest uppercase border border-[var(--color-text)] px-4 py-2 hover:bg-[var(--color-text)] hover:text-white transition-all duration-200"
+                      className="mt-2 block w-full text-center font-[family-name:var(--font-dm-sans)] text-xs tracking-widest uppercase border border-[var(--color-accent)] bg-[var(--color-accent)] text-[var(--color-dark)] px-4 py-2 hover:bg-[var(--color-dark)] hover:border-[var(--color-dark)] hover:text-white transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] focus-visible:ring-offset-2"
                       aria-label={`Commander ${product.name}`}
                     >
                       {t("featured.order")}
                     </a>
-                  </div>
                 </div>
               </article>
             </AnimatedSection>

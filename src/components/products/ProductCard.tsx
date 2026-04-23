@@ -6,7 +6,7 @@ import { Product } from "@/data/products";
 import { getProductOrderLink } from "@/lib/whatsapp";
 import { useLanguage } from "@/lib/i18n";
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({ product }: Readonly<{ product: Product }>) {
   const { t } = useLanguage();
   return (
     <article className="group relative">
@@ -34,7 +34,7 @@ export function ProductCard({ product }: { product: Product }) {
       {/* Infos produit */}
       <div className="pt-3 pb-4">
         <Link href={`/produits/${product.slug}`}>
-          <h3 className="font-[family-name:var(--font-cormorant)] text-base sm:text-lg font-light text-[var(--color-text)] hover:text-[var(--color-accent)] transition-colors leading-tight">
+          <h3 className="font-[family-name:var(--font-cormorant)] text-base sm:text-lg font-light text-[var(--color-text)] hover:text-[var(--color-accent)] transition-colors leading-5 sm:leading-tight h-10 sm:h-auto overflow-hidden">
             {product.name}
           </h3>
         </Link>
@@ -48,7 +48,7 @@ export function ProductCard({ product }: { product: Product }) {
           href={getProductOrderLink(product.name)}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-2 block w-full text-center font-[family-name:var(--font-dm-sans)] text-xs tracking-widest uppercase border border-[var(--color-text)] py-1.5 hover:bg-[var(--color-text)] hover:text-white transition-all duration-200"
+          className="mt-2 block w-full text-center font-[family-name:var(--font-dm-sans)] text-xs tracking-widest uppercase border border-[var(--color-accent)] bg-[var(--color-accent)] text-[var(--color-dark)] py-2 hover:bg-[var(--color-dark)] hover:border-[var(--color-dark)] hover:text-white transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] focus-visible:ring-offset-2"
           aria-label={`Commander ${product.name}`}
         >
           {t("product.order")}
