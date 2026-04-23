@@ -46,9 +46,9 @@ export async function getSettings(): Promise<SiteSettings> {
   if (!baseUrl) return defaultSettings;
 
   try {
-    const res = await fetch(`${baseUrl}/${SETTINGS_FILE}`, {
-      cache: "no-store",
-    });
+    const url = `${baseUrl}/${SETTINGS_FILE}`;
+    const res = await fetch(url, { cache: "no-store" });
+    console.log(`[Settings] GET ${url} → ${res.status}`);
     if (res.ok) {
       const data = await res.json() as Partial<SiteSettings>;
       return {
@@ -56,24 +56,33 @@ export async function getSettings(): Promise<SiteSettings> {
         collectionImages: { ...defaultSettings.collectionImages, ...data.collectionImages },
       };
     }
-  } catch { /* fall through */ }
+  } catch (e) {
+    console.error("[Settings] Fetch error:", e);
+  }
 
   return defaultSettings;
 }
 
-export async function saveSettings(settings: SiteSettings): Promise<boolean> {
+export async function saveSettings(
+  settings: SiteSettings,
+): Promise<{ ok: boolean; error?: string; url?: string }> {
   const token = process.env.BLOB_READ_WRITE_TOKEN;
-  if (!token) return false;
+  if (!token) return { ok: false, error: "BLOB_READ_WRITE_TOKEN manquant" };
 
   try {
-    await put(SETTINGS_FILE, JSON.stringify(settings), {
+    const json = JSON.stringify(settings, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const result = await put(SETTINGS_FILE, blob, {
       access: "public",
       token,
       allowOverwrite: true,
-      contentType: "application/json",
     });
-    return true;
-  } catch {
-    return false;
+
+    console.log(`[Settings] Saved → ${result.url}`);
+    return { ok: true, url: result.url };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error("[Settings] Save failed:", msg);
+    return { ok: false, error: msg };
   }
 }

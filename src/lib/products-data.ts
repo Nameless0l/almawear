@@ -6,7 +6,6 @@ const PRODUCTS_FILE = "alma-products-data.json";
 function getBlobBaseUrl(): string | null {
   const token = process.env.BLOB_READ_WRITE_TOKEN;
   if (!token) return null;
-  // Token format: vercel_blob_rw_STOREID_RANDOM
   const storeId = token.split("_")[3]?.toLowerCase();
   if (!storeId) return null;
   return `https://${storeId}.public.blob.vercel-storage.com`;
@@ -14,32 +13,50 @@ function getBlobBaseUrl(): string | null {
 
 export async function getProducts(): Promise<Product[]> {
   const baseUrl = getBlobBaseUrl();
-  if (!baseUrl) return staticProducts;
+  if (!baseUrl) {
+    console.log("[Products] No Blob base URL — returning static");
+    return staticProducts;
+  }
 
   try {
-    const res = await fetch(`${baseUrl}/${PRODUCTS_FILE}`, {
-      cache: "no-store",
-    });
-    if (res.ok) return (await res.json()) as Product[];
-  } catch { /* fall through */ }
+    const url = `${baseUrl}/${PRODUCTS_FILE}`;
+    const res = await fetch(url, { cache: "no-store" });
+    console.log(`[Products] GET ${url} → ${res.status}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) return data as Product[];
+      console.warn("[Products] Blob returned empty/invalid — using static");
+    }
+  } catch (e) {
+    console.error("[Products] Fetch error:", e);
+  }
 
   return staticProducts;
 }
 
-export async function saveProducts(products: Product[]): Promise<boolean> {
+export async function saveProducts(
+  products: Product[],
+): Promise<{ ok: boolean; error?: string; url?: string }> {
   const token = process.env.BLOB_READ_WRITE_TOKEN;
-  if (!token) return false;
+  if (!token) return { ok: false, error: "BLOB_READ_WRITE_TOKEN manquant" };
 
   try {
-    await put(PRODUCTS_FILE, JSON.stringify(products), {
+    const json = JSON.stringify(products, null, 2);
+    console.log(`[Products] Saving ${products.length} products (${json.length} chars)`);
+
+    const blob = new Blob([json], { type: "application/json" });
+    const result = await put(PRODUCTS_FILE, blob, {
       access: "public",
       token,
       allowOverwrite: true,
-      contentType: "application/json",
     });
-    return true;
-  } catch {
-    return false;
+
+    console.log(`[Products] Saved → ${result.url}`);
+    return { ok: true, url: result.url };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error("[Products] Save failed:", msg);
+    return { ok: false, error: msg };
   }
 }
 

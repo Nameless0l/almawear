@@ -25,10 +25,10 @@ export async function PUT(req: NextRequest, { params }: Params) {
 
   const newList = [...products];
   newList[index] = { ...updated, id };
-  const ok = await saveProducts(newList);
+  const result = await saveProducts(newList);
 
-  if (!ok) {
-    return NextResponse.json({ error: "Erreur de sauvegarde" }, { status: 500 });
+  if (!result.ok) {
+    return NextResponse.json({ error: result.error ?? "Erreur de sauvegarde" }, { status: 500 });
   }
 
   return NextResponse.json(newList[index]);
@@ -47,9 +47,9 @@ export async function DELETE(req: NextRequest, { params }: Params) {
     return NextResponse.json({ error: "Produit introuvable" }, { status: 404 });
   }
 
-  const ok = await saveProducts(filtered);
-  if (!ok) {
-    return NextResponse.json({ error: "Erreur de sauvegarde" }, { status: 500 });
+  const result = await saveProducts(filtered);
+  if (!result.ok) {
+    return NextResponse.json({ error: result.error ?? "Erreur de sauvegarde" }, { status: 500 });
   }
 
   return NextResponse.json({ success: true });

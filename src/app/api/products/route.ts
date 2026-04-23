@@ -26,10 +26,10 @@ export async function POST(req: NextRequest) {
   }
 
   const updated = [...products, newProduct];
-  const ok = await saveProducts(updated);
+  const result = await saveProducts(updated);
 
-  if (!ok) {
-    return NextResponse.json({ error: "Erreur de sauvegarde" }, { status: 500 });
+  if (!result.ok) {
+    return NextResponse.json({ error: result.error ?? "Erreur de sauvegarde" }, { status: 500 });
   }
 
   return NextResponse.json(newProduct, { status: 201 });

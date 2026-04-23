@@ -15,7 +15,9 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   }
   const body: SiteSettings = await req.json();
-  const ok = await saveSettings(body);
-  if (!ok) return NextResponse.json({ error: "Erreur de sauvegarde" }, { status: 500 });
-  return NextResponse.json({ success: true });
+  const result = await saveSettings(body);
+  if (!result.ok) {
+    return NextResponse.json({ error: result.error ?? "Erreur de sauvegarde" }, { status: 500 });
+  }
+  return NextResponse.json({ success: true, url: result.url });
 }

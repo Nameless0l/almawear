@@ -10,7 +10,9 @@ export async function POST(req: NextRequest) {
   if (!checkAuth(req)) {
     return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   }
-  const ok = await saveProducts(staticProducts);
-  if (!ok) return NextResponse.json({ error: "Blob non configuré ou erreur réseau" }, { status: 500 });
-  return NextResponse.json({ success: true, count: staticProducts.length });
+  const result = await saveProducts(staticProducts);
+  if (!result.ok) {
+    return NextResponse.json({ error: result.error ?? "Blob non configuré ou erreur réseau" }, { status: 500 });
+  }
+  return NextResponse.json({ success: true, count: staticProducts.length, url: result.url });
 }
