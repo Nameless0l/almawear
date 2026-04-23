@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { products } from "@/data/products";
+import { products as staticProducts } from "@/data/products";
+import { getProducts } from "@/lib/products-data";
 import { ProductDetail } from "@/components/products/ProductDetail";
+
+export const dynamic = "force-dynamic";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -9,11 +12,10 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  const products = await getProducts();
   const product = products.find((p) => p.slug === slug);
 
-  if (!product) {
-    return { title: "Produit introuvable" };
-  }
+  if (!product) return { title: "Produit introuvable" };
 
   return {
     title: product.name,
@@ -27,20 +29,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export function generateStaticParams() {
-  return products.map((product) => ({
-    slug: product.slug,
-  }));
+  return staticProducts.map((product) => ({ slug: product.slug }));
 }
 
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
+  const products = await getProducts();
   const product = products.find((p) => p.slug === slug);
 
-  if (!product) {
-    notFound();
-  }
+  if (!product) notFound();
 
-  // Find similar products (same category, excluding current)
   const similarProducts = products
     .filter((p) => p.category === product.category && p.id !== product.id)
     .slice(0, 3);

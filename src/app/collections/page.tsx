@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { ProductGrid } from "@/components/products/ProductGrid";
+import { getProducts } from "@/lib/products-data";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Collections",
@@ -7,7 +10,9 @@ export const metadata: Metadata = {
     "Découvrez toutes les collections Alma Wear : kaftans, boubous, ensembles et accessoires confectionnés à la main à Douala.",
 };
 
-export default function CollectionsPage() {
+export default async function CollectionsPage() {
+  const products = await getProducts();
+
   return (
     <section className="min-h-screen pt-32 pb-24 px-6 bg-[var(--color-bg)]">
       <div className="max-w-7xl mx-auto">
@@ -22,8 +27,7 @@ export default function CollectionsPage() {
           <div className="w-12 h-[1px] bg-[var(--color-accent)] mx-auto mt-6" />
         </div>
 
-        {/* Filterable product grid */}
-        <ProductGrid />
+        <ProductGrid products={products} />
       </div>
     </section>
   );

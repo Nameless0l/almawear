@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { products, categories } from "@/data/products";
+import { categories, type Product } from "@/data/products";
 import { ProductCard } from "./ProductCard";
 import { useLanguage } from "@/lib/i18n";
 
-export function ProductGrid() {
+export function ProductGrid({ products }: { products: Product[] }) {
   const [activeCategory, setActiveCategory] = useState("all");
   const { t } = useLanguage();
 
@@ -43,7 +43,7 @@ export function ProductGrid() {
       {/* Products grid */}
       <motion.div
         layout
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+        className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-8"
       >
         <AnimatePresence mode="popLayout">
           {filtered.map((product) => (

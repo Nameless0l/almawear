@@ -1,6 +1,6 @@
 "use client";
 
-import { MessageCircle, Mail, Clock, MapPin, Phone } from "lucide-react";
+import { MessageCircle, Mail, Clock, MapPin, Phone, Truck, CreditCard } from "lucide-react";
 import { getGeneralContactLink } from "@/lib/whatsapp";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { useLanguage } from "@/lib/i18n";
@@ -73,7 +73,7 @@ export function ContactContent() {
           </AnimatedSection>
 
           {/* Contact info grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
             <AnimatedSection delay={0.2}>
               <div className="border border-[var(--color-border)] p-8">
                 <div className="flex items-center gap-3 mb-4">
@@ -126,6 +126,46 @@ export function ContactContent() {
                 </div>
                 <p className="font-[family-name:var(--font-dm-sans)] text-[var(--color-text-muted)]">
                   Douala, Cameroun
+                </p>
+              </div>
+            </AnimatedSection>
+          </div>
+
+          {/* Delivery & Payment info */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <AnimatedSection delay={0.4}>
+              <div className="border border-[var(--color-border)] p-8">
+                <div className="flex items-center gap-3 mb-4">
+                  <Truck size={20} className="text-[var(--color-accent)]" />
+                  <h3 className="font-[family-name:var(--font-dm-sans)] font-medium text-[var(--color-text)]">
+                    {t("orderInfo.delivery")}
+                  </h3>
+                </div>
+                <p className="font-[family-name:var(--font-dm-sans)] text-[var(--color-text-muted)]">
+                  {t("orderInfo.deliveryValue")}
+                </p>
+                <p className="font-[family-name:var(--font-dm-sans)] text-[var(--color-text-muted)] text-sm mt-1">
+                  {t("orderInfo.deliveryCustom")}
+                </p>
+              </div>
+            </AnimatedSection>
+
+            <AnimatedSection delay={0.45}>
+              <div className="border border-[var(--color-border)] p-8">
+                <div className="flex items-center gap-3 mb-4">
+                  <CreditCard size={20} className="text-[var(--color-accent)]" />
+                  <h3 className="font-[family-name:var(--font-dm-sans)] font-medium text-[var(--color-text)]">
+                    {t("orderInfo.payment")}
+                  </h3>
+                </div>
+                <p className="font-[family-name:var(--font-dm-sans)] text-[var(--color-text-muted)]">
+                  Orange Money
+                </p>
+                <p className="font-[family-name:var(--font-dm-sans)] text-[var(--color-text-muted)]">
+                  MTN Mobile Money
+                </p>
+                <p className="font-[family-name:var(--font-dm-sans)] text-[var(--color-text-muted)]">
+                  Virement bancaire
                 </p>
               </div>
             </AnimatedSection>

@@ -77,6 +77,15 @@ const translations: Record<Locale, TranslationMap> = {
       alsoLike: "Vous aimerez aussi",
       order: "Commander",
     },
+    orderInfo: {
+      delivery: "Livraison",
+      deliveryValue: "7 à 14 jours ouvrables",
+      deliveryCustom: "Sur mesure : 3 à 4 semaines",
+      payment: "Paiement",
+      paymentValue: "Orange Money · MTN Mobile Money · Virement bancaire",
+      availability: "Disponibilité",
+      availabilityValue: "Disponible à la commande",
+    },
     collections: {
       title: "Collections",
       subtitle: "Nos créations",
@@ -207,6 +216,15 @@ const translations: Record<Locale, TranslationMap> = {
       orderWhatsApp: "Order on WhatsApp",
       alsoLike: "You may also like",
       order: "Order",
+    },
+    orderInfo: {
+      delivery: "Delivery",
+      deliveryValue: "7 to 14 business days",
+      deliveryCustom: "Custom made: 3 to 4 weeks",
+      payment: "Payment",
+      paymentValue: "Orange Money · MTN Mobile Money · Bank transfer",
+      availability: "Availability",
+      availabilityValue: "Available to order",
     },
     collections: {
       title: "Collections",

@@ -8,6 +8,7 @@ import { useLanguage } from "@/lib/i18n";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { locale, setLocale, t } = useLanguage();
 
@@ -19,35 +20,56 @@ export function Navbar() {
   ];
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", handleScroll);
+    let lastScrollY = window.scrollY;
+
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      setScrolled(currentY > 50);
+
+      // Cache la navbar quand on scroll vers le bas (après 100px), montre quand on scroll vers le haut
+      if (currentY > 100 && currentY > lastScrollY) {
+        setHidden(true);
+      } else {
+        setHidden(false);
+      }
+      lastScrollY = currentY;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+        hidden && !menuOpen ? "-translate-y-full" : "translate-y-0"
+      } ${
         scrolled
           ? "bg-[var(--color-bg)]/95 backdrop-blur-sm shadow-sm py-3"
           : "bg-transparent py-5"
       }`}
     >
       <nav className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-        {/* Logo + texte */}
-        <Link
-          href="/"
-          className={`flex items-center gap-3 font-[family-name:var(--font-cormorant)] text-2xl font-semibold tracking-wide transition-colors ${
-            scrolled ? "text-[var(--color-text)]" : "text-white"
-          }`}
-        >
+        {/* Logo */}
+        <Link href="/" className="relative h-12 w-32">
+          {/* Logo noir — visible au scroll (fond clair) */}
           <Image
-            src="/logo.png"
+            src="/LOGO-ALMA-WEAR-NOIR.png"
             alt="Alma Wear"
-            width={40}
-            height={40}
-            className={`transition-all duration-300 ${scrolled ? "" : "invert"}`}
+            width={130}
+            height={48}
+            className={`absolute inset-0 object-contain transition-opacity duration-300 ${scrolled ? "opacity-100" : "opacity-0"}`}
+            priority
           />
-          ALMA WEAR
+          {/* Logo blanc — visible sur le hero (fond sombre) */}
+          <Image
+            src="/LOGO-ALMA-WEAR.png"
+            alt="Alma Wear"
+            width={130}
+            height={48}
+            className={`absolute inset-0 object-contain transition-opacity duration-300 ${scrolled ? "opacity-0" : "opacity-100"}`}
+            priority
+          />
         </Link>
 
         {/* Navigation desktop */}

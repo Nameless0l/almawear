@@ -3,13 +3,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { products } from "@/data/products";
+import { type Product } from "@/data/products";
 import { getProductOrderLink } from "@/lib/whatsapp";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { useLanguage } from "@/lib/i18n";
 
-export function FeaturedProducts() {
-  const featured = products.filter((p) => p.featured);
+export function FeaturedProducts({ products }: { products: Product[] }) {
   const { t } = useLanguage();
 
   return (
@@ -27,8 +26,8 @@ export function FeaturedProducts() {
         </AnimatedSection>
 
         {/* Products grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {featured.map((product, index) => (
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-8">
+          {products.map((product, index) => (
             <AnimatedSection key={product.id} delay={index * 0.1}>
               <article className="group relative overflow-hidden">
                 {/* Badge */}
@@ -48,7 +47,7 @@ export function FeaturedProducts() {
                     alt={product.name}
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 33vw"
                   />
                 </Link>
 

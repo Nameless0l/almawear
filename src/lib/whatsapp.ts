@@ -11,11 +11,11 @@ export function getProductOrderLink(
   size?: string,
   color?: string,
 ): string {
-  const message = `Bonjour Alma Wear ! 👋\n\nJe suis intéressé(e) par :\n*${productName}*${size ? `\nTaille : ${size}` : ""}${color ? `\nCouleur : ${color}` : ""}\n\nComment faire pour l'avoir ? Pourriez-vous me livrer / expédier ? Merci 🌸`;
+  const message = `Bonjour Alma Wear,\n\nJe suis intéressé(e) par le modèle ${productName}.${color ? `\nCouleur : ${color}` : ""}${size ? `\nTaille : ${size}` : ""}\n\nJe souhaite procéder à la commande.\n\nMerci.`;
   return getWhatsAppLink(message);
 }
 
 export function getGeneralContactLink(): string {
-  const message = `Bonjour Alma Wear ! 👋\n\nJe souhaite en savoir plus sur vos créations. Merci !`;
+  const message = `Bonjour Alma Wear,\n\nJe souhaite en savoir plus sur vos créations. Merci.`;
   return getWhatsAppLink(message);
 }

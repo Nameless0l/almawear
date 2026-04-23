@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowLeft, Ruler, Sparkles, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Ruler, Sparkles, ShieldCheck, Truck, CreditCard, CheckCircle } from "lucide-react";
 import { MessageCircle } from "lucide-react";
 import { Product } from "@/data/products";
 import { getProductOrderLink } from "@/lib/whatsapp";
@@ -149,6 +149,43 @@ export function ProductDetail({ product, similarProducts }: ProductDetailProps) 
               <MessageCircle size={20} />
               {t("product.orderWhatsApp")}
             </a>
+
+            {/* Order info strip */}
+            <div className="border border-[var(--color-border)] divide-y divide-[var(--color-border)] mb-8">
+              <div className="flex items-start gap-3 px-4 py-3">
+                <Truck size={16} className="text-[var(--color-accent)] mt-0.5 shrink-0" />
+                <div>
+                  <p className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--color-text)] uppercase tracking-wider">
+                    {t("orderInfo.delivery")}
+                  </p>
+                  <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--color-text-muted)] mt-0.5">
+                    {t("orderInfo.deliveryValue")} · {t("orderInfo.deliveryCustom")}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 px-4 py-3">
+                <CreditCard size={16} className="text-[var(--color-accent)] mt-0.5 shrink-0" />
+                <div>
+                  <p className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--color-text)] uppercase tracking-wider">
+                    {t("orderInfo.payment")}
+                  </p>
+                  <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--color-text-muted)] mt-0.5">
+                    {t("orderInfo.paymentValue")}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 px-4 py-3">
+                <CheckCircle size={16} className="text-[var(--color-accent)] mt-0.5 shrink-0" />
+                <div>
+                  <p className="font-[family-name:var(--font-dm-sans)] text-xs font-medium text-[var(--color-text)] uppercase tracking-wider">
+                    {t("orderInfo.availability")}
+                  </p>
+                  <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--color-text-muted)] mt-0.5">
+                    {t("orderInfo.availabilityValue")}
+                  </p>
+                </div>
+              </div>
+            </div>
 
             {/* Product details */}
             <div className="border-t border-[var(--color-border)] pt-6 space-y-4">
