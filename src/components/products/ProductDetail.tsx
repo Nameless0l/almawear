@@ -4,10 +4,10 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowLeft, Ruler, Sparkles, ShieldCheck, Truck, CreditCard, CheckCircle } from "lucide-react";
-import { MessageCircle } from "lucide-react";
+import { ArrowLeft, Ruler, Sparkles, ShieldCheck, Truck, CreditCard, CheckCircle, MessageCircle } from "lucide-react";
 import { Product } from "@/data/products";
 import { getProductOrderLink } from "@/lib/whatsapp";
+import { sortProductSizes } from "@/lib/sizes";
 import { ProductCard } from "./ProductCard";
 import { useLanguage } from "@/lib/i18n";
 
@@ -16,12 +16,16 @@ interface ProductDetailProps {
   similarProducts: Product[];
 }
 
-export function ProductDetail({ product, similarProducts }: ProductDetailProps) {
+export function ProductDetail({
+  product,
+  similarProducts,
+}: Readonly<ProductDetailProps>) {
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [selectedColor, setSelectedColor] = useState<string>(
     product.colors[0] || ""
   );
   const { t } = useLanguage();
+  const orderedSizes = sortProductSizes(product.sizes);
 
   const orderLink = getProductOrderLink(
     product.name,
@@ -122,7 +126,7 @@ export function ProductDetail({ product, similarProducts }: ProductDetailProps) 
                 {t("product.sizes")}
               </p>
               <div className="flex flex-wrap gap-2">
-                {product.sizes.map((size) => (
+                {orderedSizes.map((size) => (
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}

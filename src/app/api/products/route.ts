@@ -30,15 +30,23 @@ export async function POST(req: NextRequest) {
   const newProduct: Product = await req.json();
   const products = await getProducts();
 
-  if (products.some((p) => p.id === newProduct.id || p.slug === newProduct.slug)) {
-    return NextResponse.json({ error: "Produit déjà existant" }, { status: 409 });
+  if (
+    products.some((p) => p.id === newProduct.id || p.slug === newProduct.slug)
+  ) {
+    return NextResponse.json(
+      { error: "Produit déjà existant" },
+      { status: 409 },
+    );
   }
 
   const updated = [...products, newProduct];
   const result = await saveProducts(updated);
 
   if (!result.ok) {
-    return NextResponse.json({ error: result.error ?? "Erreur de sauvegarde" }, { status: 500 });
+    return NextResponse.json(
+      { error: result.error ?? "Erreur de sauvegarde" },
+      { status: 500 },
+    );
   }
 
   return NextResponse.json(newProduct, { status: 201 });

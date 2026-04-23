@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSettings, saveSettings, type SiteSettings } from "@/lib/settings-data";
+import {
+  getSettings,
+  saveSettings,
+  type SiteSettings,
+} from "@/lib/settings-data";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 function checkAuth(req: NextRequest): boolean {
-  return req.headers.get("authorization") === `Bearer alma-admin-${process.env.ADMIN_PASSWORD}`;
+  return (
+    req.headers.get("authorization") ===
+    `Bearer alma-admin-${process.env.ADMIN_PASSWORD}`
+  );
 }
 
 export async function GET() {
@@ -26,7 +33,10 @@ export async function PUT(req: NextRequest) {
   const body: SiteSettings = await req.json();
   const result = await saveSettings(body);
   if (!result.ok) {
-    return NextResponse.json({ error: result.error ?? "Erreur de sauvegarde" }, { status: 500 });
+    return NextResponse.json(
+      { error: result.error ?? "Erreur de sauvegarde" },
+      { status: 500 },
+    );
   }
   return NextResponse.json({ success: true, url: result.url });
 }

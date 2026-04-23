@@ -6,6 +6,7 @@ import { X, Check, Loader2 } from "lucide-react";
 import { type Product } from "@/data/products";
 import { ImageUpload } from "./ImageUpload";
 import { getAuthHeader } from "./AdminGuard";
+import { sortProductSizes } from "@/lib/sizes";
 
 const PRESET_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "Sur mesure"];
 const CATEGORIES = [
@@ -41,7 +42,7 @@ export function ProductForm({
     currency: "FCFA",
     category: initial?.category ?? "femme",
     colors: initial?.colors ?? [],
-    sizes: initial?.sizes ?? [],
+    sizes: sortProductSizes(initial?.sizes ?? []),
     images: initial?.images ?? [],
     featured: initial?.featured ?? false,
     isNew: initial?.isNew ?? true,
@@ -66,11 +67,13 @@ export function ProductForm({
   }
 
   function toggleSize(size: string) {
+    const nextSizes = form.sizes.includes(size)
+      ? form.sizes.filter((s) => s !== size)
+      : [...form.sizes, size];
+
     set(
       "sizes",
-      form.sizes.includes(size)
-        ? form.sizes.filter((s) => s !== size)
-        : [...form.sizes, size]
+      sortProductSizes(nextSizes)
     );
   }
 
@@ -91,6 +94,7 @@ export function ProductForm({
 
     const product: Product = {
       ...form,
+      sizes: sortProductSizes(form.sizes),
       id: initial?.id ?? `${Date.now()}`,
       slug: initial?.slug ?? slugify(form.name),
     };

@@ -19,16 +19,28 @@ const SETTINGS_FILE = "alma-settings.json";
 
 export const defaultSettings: SiteSettings = {
   lookbook: [
-    { url: "/images/hero/_alma_wear_1771498601526.jpeg", alt: "Lookbook 1", span: "col-span-2 row-span-2" },
-    { url: "/images/hero/lookbook-2.jpeg",               alt: "Lookbook 2", span: "col-span-2" },
-    { url: "/images/hero/lookbook-image.png",            alt: "Lookbook 3", span: "" },
-    { url: "/images/hero/lookbook-3.png",                alt: "Lookbook 4", span: "" },
-    { url: "/images/hero/lookbook-4.png",                alt: "Lookbook 5", span: "" },
-    { url: "/images/hero/lookbook-5.png",                alt: "Lookbook 6", span: "col-span-2" },
+    {
+      url: "/images/hero/_alma_wear_1771498601526.jpeg",
+      alt: "Lookbook 1",
+      span: "col-span-2 row-span-2",
+    },
+    {
+      url: "/images/hero/lookbook-2.jpeg",
+      alt: "Lookbook 2",
+      span: "col-span-2",
+    },
+    { url: "/images/hero/lookbook-image.png", alt: "Lookbook 3", span: "" },
+    { url: "/images/hero/lookbook-3.png", alt: "Lookbook 4", span: "" },
+    { url: "/images/hero/lookbook-4.png", alt: "Lookbook 5", span: "" },
+    {
+      url: "/images/hero/lookbook-5.png",
+      alt: "Lookbook 6",
+      span: "col-span-2",
+    },
   ],
   collectionImages: {
-    femme:      "/images/products/kaftan-blanc-gris-1.png",
-    homme:      "/images/products/_alma_wear_1771499218303.jpeg",
+    femme: "/images/products/kaftan-blanc-gris-1.png",
+    homme: "/images/products/_alma_wear_1771499218303.jpeg",
     accessoire: "/images/products/kaftan-rose-bleu-1.png",
   },
 };
@@ -50,10 +62,13 @@ export async function getSettings(): Promise<SiteSettings> {
     const res = await fetch(url, { cache: "no-store" });
     console.log(`[Settings] GET ${url} → ${res.status}`);
     if (res.ok) {
-      const data = await res.json() as Partial<SiteSettings>;
+      const data = (await res.json()) as Partial<SiteSettings>;
       return {
-        lookbook:         data.lookbook          ?? defaultSettings.lookbook,
-        collectionImages: { ...defaultSettings.collectionImages, ...data.collectionImages },
+        lookbook: data.lookbook ?? defaultSettings.lookbook,
+        collectionImages: {
+          ...defaultSettings.collectionImages,
+          ...data.collectionImages,
+        },
       };
     }
   } catch (e) {
