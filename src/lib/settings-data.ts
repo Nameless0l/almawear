@@ -1,4 +1,4 @@
-import { put, list } from "@vercel/blob";
+import { put } from "@vercel/blob";
 
 export type LookbookImage = {
   url: string;
@@ -33,22 +33,28 @@ export const defaultSettings: SiteSettings = {
   },
 };
 
-export async function getSettings(): Promise<SiteSettings> {
+function getBlobBaseUrl(): string | null {
   const token = process.env.BLOB_READ_WRITE_TOKEN;
-  if (!token) return defaultSettings;
+  if (!token) return null;
+  const storeId = token.split("_")[3]?.toLowerCase();
+  if (!storeId) return null;
+  return `https://${storeId}.public.blob.vercel-storage.com`;
+}
+
+export async function getSettings(): Promise<SiteSettings> {
+  const baseUrl = getBlobBaseUrl();
+  if (!baseUrl) return defaultSettings;
 
   try {
-    const { blobs } = await list({ token });
-    const blob = blobs.find((b) => b.pathname === SETTINGS_FILE);
-    if (blob) {
-      const res = await fetch(blob.url, { cache: "no-store" });
-      if (res.ok) {
-        const data = await res.json() as Partial<SiteSettings>;
-        return {
-          lookbook:          data.lookbook          ?? defaultSettings.lookbook,
-          collectionImages: { ...defaultSettings.collectionImages, ...data.collectionImages },
-        };
-      }
+    const res = await fetch(`${baseUrl}/${SETTINGS_FILE}`, {
+      cache: "no-store",
+    });
+    if (res.ok) {
+      const data = await res.json() as Partial<SiteSettings>;
+      return {
+        lookbook:         data.lookbook          ?? defaultSettings.lookbook,
+        collectionImages: { ...defaultSettings.collectionImages, ...data.collectionImages },
+      };
     }
   } catch { /* fall through */ }
 
