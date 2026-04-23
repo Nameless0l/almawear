@@ -18,7 +18,6 @@ export function Navbar() {
   // La navbar est transparente (texte blanc) uniquement sur l'accueil en haut de page
   const isHome = pathname === "/";
   const useWhiteText = isHome && !scrolled;
-  const showDarkLogo = scrolled || !isHome;
 
   const links = [
     { href: "/", label: t("nav.home") },
@@ -53,35 +52,35 @@ export function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-40 flex items-center transition-all duration-300 ${
         hidden && !menuOpen ? "-translate-y-full" : "translate-y-0"
       } ${
-        scrolled || !isHome
-          ? "bg-[var(--color-bg)]/95 backdrop-blur-sm shadow-sm py-3"
-          : "bg-transparent py-5"
+        scrolled
+          ? "h-16 bg-[var(--color-bg)]/95 backdrop-blur-sm shadow-sm"
+          : !isHome
+          ? "h-20 bg-[var(--color-bg)] border-b border-[var(--color-border)]"
+          : "h-24 bg-transparent"
       }`}
     >
-      <nav className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+      <nav className="w-full max-w-7xl mx-auto px-6 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="relative h-12 w-32">
-          {/* Logo noir — visible sur fond clair (scroll ou page non-accueil) */}
-          <Image
-            src="/LOGO-ALMA-WEAR-NOIR.png"
-            alt="Alma Wear"
-            width={130}
-            height={48}
-            className={`absolute inset-0 object-contain transition-opacity duration-300 ${showDarkLogo ? "opacity-100" : "opacity-0"}`}
-            priority
-          />
-          {/* Logo blanc — visible uniquement sur le hero (accueil, pas encore scrollé) */}
-          <Image
-            src="/LOGO-ALMA-WEAR.png"
-            alt="Alma Wear"
-            width={130}
-            height={48}
-            className={`absolute inset-0 object-contain transition-opacity duration-300 ${showDarkLogo ? "opacity-0" : "opacity-100"}`}
-            priority
-          />
+        <Link href="/" className="flex items-center">
+          <div className="relative w-28 h-20">
+            <Image
+              src="/LOGO-ALMA-WEAR-NOIR.png"
+              alt="Alma Wear"
+              fill
+              className={`object-contain object-left transition-opacity duration-300 ${scrolled ? "opacity-100" : "opacity-0"}`}
+              priority
+            />
+            <Image
+              src="/LOGO-ALMA-WEAR.png"
+              alt="Alma Wear"
+              fill
+              className={`object-contain object-left transition-opacity duration-300 ${scrolled ? "opacity-0" : "opacity-100"}`}
+              priority
+            />
+          </div>
         </Link>
 
         {/* Navigation desktop */}

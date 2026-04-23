@@ -42,7 +42,9 @@ export async function saveProducts(
 
   try {
     const json = JSON.stringify(products, null, 2);
-    console.log(`[Products] Saving ${products.length} products (${json.length} chars)`);
+    console.log(
+      `[Products] Saving ${products.length} products (${json.length} chars)`,
+    );
 
     const result = await put(PRODUCTS_FILE, json, {
       access: "public",
