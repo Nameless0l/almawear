@@ -18,6 +18,7 @@ export function Navbar() {
   // La navbar est transparente (texte blanc) uniquement sur l'accueil en haut de page
   const isHome = pathname === "/";
   const useWhiteText = isHome && !scrolled;
+  const showDarkLogo = scrolled || !isHome;
 
   const links = [
     { href: "/", label: t("nav.home") },
@@ -63,40 +64,45 @@ export function Navbar() {
       <nav className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="relative h-12 w-32">
-          {/* Logo noir — visible au scroll (fond clair) */}
+          {/* Logo noir — visible sur fond clair (scroll ou page non-accueil) */}
           <Image
             src="/LOGO-ALMA-WEAR-NOIR.png"
             alt="Alma Wear"
             width={130}
             height={48}
-            className={`absolute inset-0 object-contain transition-opacity duration-300 ${scrolled ? "opacity-100" : "opacity-0"}`}
+            className={`absolute inset-0 object-contain transition-opacity duration-300 ${showDarkLogo ? "opacity-100" : "opacity-0"}`}
             priority
           />
-          {/* Logo blanc — visible sur le hero (fond sombre) */}
+          {/* Logo blanc — visible uniquement sur le hero (accueil, pas encore scrollé) */}
           <Image
             src="/LOGO-ALMA-WEAR.png"
             alt="Alma Wear"
             width={130}
             height={48}
-            className={`absolute inset-0 object-contain transition-opacity duration-300 ${scrolled ? "opacity-0" : "opacity-100"}`}
+            className={`absolute inset-0 object-contain transition-opacity duration-300 ${showDarkLogo ? "opacity-0" : "opacity-100"}`}
             priority
           />
         </Link>
 
         {/* Navigation desktop */}
         <ul className="hidden md:flex items-center gap-8 font-[family-name:var(--font-dm-sans)] text-sm tracking-widest uppercase">
-          {links.map((link) => (
-            <li key={link.href}>
-              <Link
-                href={link.href}
-                className={`transition-colors hover:text-[var(--color-accent)] ${
-                  useWhiteText ? "text-white" : "text-[var(--color-text)]"
-                }`}
-              >
-                {link.label}
-              </Link>
-            </li>
-          ))}
+          {links.map((link) => {
+            const isActive = link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
+            return (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  className={`transition-colors hover:text-[var(--color-accent)] pb-0.5 ${
+                    isActive
+                      ? "border-b border-[var(--color-accent)] text-[var(--color-accent)]"
+                      : useWhiteText ? "text-white" : "text-[var(--color-text)]"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              </li>
+            );
+          })}
           <li>
             <button
               onClick={() => setLocale(locale === "fr" ? "en" : "fr")}
@@ -144,17 +150,20 @@ export function Navbar() {
       {menuOpen && (
         <div className="md:hidden fixed inset-0 bg-[var(--color-bg)] z-40 flex items-center justify-center">
           <ul className="flex flex-col gap-8 font-[family-name:var(--font-dm-sans)] text-lg tracking-widest uppercase text-center">
-            {links.map((link) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  onClick={() => setMenuOpen(false)}
-                  className="text-[var(--color-text)] hover:text-[var(--color-accent)] transition-colors"
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
+            {links.map((link) => {
+              const isActive = link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
+              return (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    onClick={() => setMenuOpen(false)}
+                    className={`transition-colors ${isActive ? "text-[var(--color-accent)]" : "text-[var(--color-text)] hover:text-[var(--color-accent)]"}`}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              );
+            })}
             <li>
               <button
                 onClick={() => {
