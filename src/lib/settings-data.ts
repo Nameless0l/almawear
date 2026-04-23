@@ -76,6 +76,7 @@ export async function saveSettings(
       access: "public",
       token,
       allowOverwrite: true,
+      addRandomSuffix: false,
     });
 
     console.log(`[Settings] Saved → ${result.url}`);

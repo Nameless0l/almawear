@@ -49,6 +49,7 @@ export async function saveProducts(
       access: "public",
       token,
       allowOverwrite: true,
+      addRandomSuffix: false,
     });
 
     console.log(`[Products] Saved → ${result.url}`);
