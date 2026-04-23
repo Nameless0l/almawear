@@ -44,12 +44,12 @@ export async function saveProducts(
     const json = JSON.stringify(products, null, 2);
     console.log(`[Products] Saving ${products.length} products (${json.length} chars)`);
 
-    const blob = new Blob([json], { type: "application/json" });
-    const result = await put(PRODUCTS_FILE, blob, {
+    const result = await put(PRODUCTS_FILE, Buffer.from(json, "utf-8"), {
       access: "public",
       token,
       allowOverwrite: true,
       addRandomSuffix: false,
+      contentType: "application/json",
     });
 
     console.log(`[Products] Saved → ${result.url}`);

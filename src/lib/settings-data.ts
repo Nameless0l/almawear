@@ -71,12 +71,12 @@ export async function saveSettings(
 
   try {
     const json = JSON.stringify(settings, null, 2);
-    const blob = new Blob([json], { type: "application/json" });
-    const result = await put(SETTINGS_FILE, blob, {
+    const result = await put(SETTINGS_FILE, Buffer.from(json, "utf-8"), {
       access: "public",
       token,
       allowOverwrite: true,
       addRandomSuffix: false,
+      contentType: "application/json",
     });
 
     console.log(`[Settings] Saved → ${result.url}`);
