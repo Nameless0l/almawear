@@ -3,14 +3,21 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X, Globe } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Menu, X, Globe, LayoutDashboard } from "lucide-react";
 import { useLanguage } from "@/lib/i18n";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const { locale, setLocale, t } = useLanguage();
+  const pathname = usePathname();
+
+  // La navbar est transparente (texte blanc) uniquement sur l'accueil en haut de page
+  const isHome = pathname === "/";
+  const useWhiteText = isHome && !scrolled;
 
   const links = [
     { href: "/", label: t("nav.home") },
@@ -39,12 +46,16 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    setIsAdmin(!!sessionStorage.getItem("alma_admin_token"));
+  }, []);
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
         hidden && !menuOpen ? "-translate-y-full" : "translate-y-0"
       } ${
-        scrolled
+        scrolled || !isHome
           ? "bg-[var(--color-bg)]/95 backdrop-blur-sm shadow-sm py-3"
           : "bg-transparent py-5"
       }`}
@@ -79,7 +90,7 @@ export function Navbar() {
               <Link
                 href={link.href}
                 className={`transition-colors hover:text-[var(--color-accent)] ${
-                  scrolled ? "text-[var(--color-text)]" : "text-white"
+                  useWhiteText ? "text-white" : "text-[var(--color-text)]"
                 }`}
               >
                 {link.label}
@@ -90,7 +101,7 @@ export function Navbar() {
             <button
               onClick={() => setLocale(locale === "fr" ? "en" : "fr")}
               className={`flex items-center gap-1.5 transition-colors hover:text-[var(--color-accent)] ${
-                scrolled ? "text-[var(--color-text)]" : "text-white"
+                useWhiteText ? "text-white" : "text-[var(--color-text)]"
               }`}
               aria-label="Switch language"
             >
@@ -98,6 +109,18 @@ export function Navbar() {
               {locale === "fr" ? "EN" : "FR"}
             </button>
           </li>
+          {isAdmin && (
+            <li>
+              <Link
+                href="/admin"
+                className="flex items-center gap-1.5 bg-[var(--color-accent)] text-white px-3 py-1.5 text-xs tracking-widest uppercase font-[family-name:var(--font-dm-sans)] hover:bg-[var(--color-dark)] transition-colors"
+                title="Espace administration"
+              >
+                <LayoutDashboard size={13} />
+                Admin
+              </Link>
+            </li>
+          )}
         </ul>
 
         {/* Menu burger mobile */}
@@ -111,7 +134,7 @@ export function Navbar() {
           ) : (
             <Menu
               size={24}
-              className={scrolled ? "text-[var(--color-text)]" : "text-white"}
+              className={useWhiteText ? "text-white" : "text-[var(--color-text)]"}
             />
           )}
         </button>
@@ -145,6 +168,18 @@ export function Navbar() {
                 {locale === "fr" ? "English" : "Français"}
               </button>
             </li>
+            {isAdmin && (
+              <li>
+                <Link
+                  href="/admin"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center justify-center gap-2 bg-[var(--color-accent)] text-white px-6 py-3 text-sm tracking-widest uppercase font-[family-name:var(--font-dm-sans)] hover:bg-[var(--color-dark)] transition-colors mx-auto"
+                >
+                  <LayoutDashboard size={16} />
+                  Administration
+                </Link>
+              </li>
+            )}
           </ul>
         </div>
       )}
