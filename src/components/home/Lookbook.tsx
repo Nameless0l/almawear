@@ -3,17 +3,13 @@
 import Image from "next/image";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { useLanguage } from "@/lib/i18n";
+import { type LookbookImage } from "@/lib/settings-data";
 
-const lookbookImages = [
-  { src: "/images/hero/_alma_wear_1771498601526.jpeg", alt: "Lookbook Alma Wear 1", span: "col-span-2 row-span-2" },
-  { src: "/images/hero/lookbook-2.jpeg", alt: "Lookbook Alma Wear 2", span: "col-span-2" },
-  { src: "/images/hero/lookbook-image.png", alt: "Lookbook Alma Wear 2", span: "" },
-  { src: "/images/hero/lookbook-3.png", alt: "Lookbook Alma Wear 3", span: "" },
-  { src: "/images/hero/lookbook-4.png", alt: "Lookbook Alma Wear 4", span: "" },
-  { src: "/images/hero/lookbook-5.png", alt: "Lookbook Alma Wear 5", span: "col-span-2" },
-];
+interface LookbookProps {
+  images: LookbookImage[];
+}
 
-export function Lookbook() {
+export function Lookbook({ images }: LookbookProps) {
   const { t } = useLanguage();
 
   return (
@@ -30,7 +26,7 @@ export function Lookbook() {
         </AnimatedSection>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-          {lookbookImages.map((img, index) => (
+          {images.map((img, index) => (
             <AnimatedSection
               key={index}
               delay={index * 0.08}
@@ -38,7 +34,7 @@ export function Lookbook() {
             >
               <div className="relative aspect-[3/4] w-full h-full min-h-[250px] bg-[var(--color-surface)]">
                 <Image
-                  src={img.src}
+                  src={img.url}
                   alt={img.alt}
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-105"

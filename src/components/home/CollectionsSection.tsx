@@ -5,34 +5,37 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 
-const collections = [
-  {
-    label: "Collection Femme",
-    sublabel: "Kaftans & Boubous",
-    href: "/collections?category=femme",
-    image: "/images/products/kaftan-blanc-gris-1.png",
-    span: "lg:col-span-2 lg:row-span-2",
-    aspect: "aspect-[4/5] lg:aspect-auto lg:min-h-[520px]",
-  },
-  {
-    label: "Collection Homme",
-    sublabel: "Ensembles & Tenues",
-    href: "/collections?category=homme",
-    image: "/images/products/_alma_wear_1771499218303.jpeg",
-    span: "lg:col-span-1 lg:row-span-1",
-    aspect: "aspect-[4/3] lg:aspect-auto",
-  },
-  {
-    label: "Accessoires",
-    sublabel: "Sacs & Bijoux",
-    href: "/collections?category=accessoire",
-    image: "/images/products/kaftan-rose-bleu-1.png",
-    span: "lg:col-span-1 lg:row-span-1",
-    aspect: "aspect-[4/3] lg:aspect-auto",
-  },
-];
+interface CollectionsSectionProps {
+  images: { femme: string; homme: string; accessoire: string };
+}
 
-export function CollectionsSection() {
+export function CollectionsSection({ images }: CollectionsSectionProps) {
+  const collections = [
+    {
+      label: "Collection Femme",
+      sublabel: "Kaftans & Boubous",
+      href: "/collections?category=femme",
+      image: images.femme,
+      span: "lg:col-span-2 lg:row-span-2",
+      aspect: "aspect-[4/5] lg:aspect-auto lg:min-h-[520px]",
+    },
+    {
+      label: "Collection Homme",
+      sublabel: "Ensembles & Tenues",
+      href: "/collections?category=homme",
+      image: images.homme,
+      span: "lg:col-span-1 lg:row-span-1",
+      aspect: "aspect-[4/3] lg:aspect-auto",
+    },
+    {
+      label: "Accessoires",
+      sublabel: "Sacs & Bijoux",
+      href: "/collections?category=accessoire",
+      image: images.accessoire,
+      span: "lg:col-span-1 lg:row-span-1",
+      aspect: "aspect-[4/3] lg:aspect-auto",
+    },
+  ];
   return (
     <section className="py-24 px-6 bg-[var(--color-surface)]">
       <div className="max-w-7xl mx-auto">

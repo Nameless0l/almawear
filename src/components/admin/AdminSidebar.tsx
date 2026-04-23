@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, ShoppingBag, Plus, LogOut, ExternalLink } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, Plus, LogOut, ExternalLink, Images } from "lucide-react";
 
 const navLinks = [
-  { href: "/admin", label: "Tableau de bord", icon: LayoutDashboard, exact: true },
-  { href: "/admin/produits", label: "Produits", icon: ShoppingBag, exact: false },
-  { href: "/admin/produits/nouveau", label: "Ajouter un produit", icon: Plus, exact: true },
+  { href: "/admin",              label: "Tableau de bord",   icon: LayoutDashboard, exact: true },
+  { href: "/admin/produits",     label: "Produits",          icon: ShoppingBag,     exact: false },
+  { href: "/admin/produits/nouveau", label: "Ajouter un produit", icon: Plus,       exact: true },
+  { href: "/admin/contenu",      label: "Contenu du site",   icon: Images,          exact: true },
 ];
 
 export function AdminSidebar() {

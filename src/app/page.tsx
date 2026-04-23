@@ -5,20 +5,21 @@ import { BrandStory } from "@/components/home/BrandStory";
 import { Lookbook } from "@/components/home/Lookbook";
 import { WhatsAppBanner } from "@/components/home/WhatsAppBanner";
 import { getProducts } from "@/lib/products-data";
+import { getSettings } from "@/lib/settings-data";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const products = await getProducts();
+  const [products, settings] = await Promise.all([getProducts(), getSettings()]);
   const featured = products.filter((p) => p.featured);
 
   return (
     <>
       <HeroSection />
       <FeaturedProducts products={featured} />
-      <CollectionsSection />
+      <CollectionsSection images={settings.collectionImages} />
       <BrandStory />
-      <Lookbook />
+      <Lookbook images={settings.lookbook} />
       <WhatsAppBanner />
     </>
   );
