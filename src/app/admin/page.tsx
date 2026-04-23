@@ -23,7 +23,8 @@ export default function AdminDashboard() {
       });
       const data = await res.json();
       if (res.ok) {
-        setSeedResult({ type: "success", msg: `${data.count} produits enregistrés dans Blob.` });
+        const verif = data.verifyOk ? ` ✓ Vérifié (${data.verifySize} chars)` : " ⚠ Vérification échouée";
+        setSeedResult({ type: "success", msg: `${data.count} produits enregistrés.${verif}` });
       } else {
         setSeedResult({ type: "error", msg: data.error ?? "Erreur" });
       }

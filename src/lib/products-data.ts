@@ -19,7 +19,7 @@ export async function getProducts(): Promise<Product[]> {
   }
 
   try {
-    const url = `${baseUrl}/${PRODUCTS_FILE}`;
+    const url = `${baseUrl}/${PRODUCTS_FILE}?_t=${Date.now()}`;
     const res = await fetch(url, { cache: "no-store" });
     console.log(`[Products] GET ${url} → ${res.status}`);
     if (res.ok) {
@@ -44,7 +44,7 @@ export async function saveProducts(
     const json = JSON.stringify(products, null, 2);
     console.log(`[Products] Saving ${products.length} products (${json.length} chars)`);
 
-    const result = await put(PRODUCTS_FILE, Buffer.from(json, "utf-8"), {
+    const result = await put(PRODUCTS_FILE, json, {
       access: "public",
       token,
       allowOverwrite: true,

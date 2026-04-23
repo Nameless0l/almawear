@@ -14,5 +14,22 @@ export async function POST(req: NextRequest) {
   if (!result.ok) {
     return NextResponse.json({ error: result.error ?? "Blob non configuré ou erreur réseau" }, { status: 500 });
   }
-  return NextResponse.json({ success: true, count: staticProducts.length, url: result.url });
+
+  // Verify: immediately re-read what was saved
+  let verifySize = 0;
+  let verifyOk = false;
+  try {
+    const verifyRes = await fetch(`${result.url}?_v=${Date.now()}`, { cache: "no-store" });
+    const verifyText = await verifyRes.text();
+    verifySize = verifyText.length;
+    verifyOk = verifyText.startsWith("[");
+  } catch { /* ignore */ }
+
+  return NextResponse.json({
+    success: true,
+    count: staticProducts.length,
+    url: result.url,
+    verifySize,
+    verifyOk,
+  });
 }

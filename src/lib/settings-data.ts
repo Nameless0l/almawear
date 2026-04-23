@@ -46,7 +46,7 @@ export async function getSettings(): Promise<SiteSettings> {
   if (!baseUrl) return defaultSettings;
 
   try {
-    const url = `${baseUrl}/${SETTINGS_FILE}`;
+    const url = `${baseUrl}/${SETTINGS_FILE}?_t=${Date.now()}`;
     const res = await fetch(url, { cache: "no-store" });
     console.log(`[Settings] GET ${url} → ${res.status}`);
     if (res.ok) {
@@ -71,7 +71,7 @@ export async function saveSettings(
 
   try {
     const json = JSON.stringify(settings, null, 2);
-    const result = await put(SETTINGS_FILE, Buffer.from(json, "utf-8"), {
+    const result = await put(SETTINGS_FILE, json, {
       access: "public",
       token,
       allowOverwrite: true,
