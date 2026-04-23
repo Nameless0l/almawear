@@ -41,15 +41,15 @@ export function ProductCard({ product }: { product: Product }) {
         <p className="font-[family-name:var(--font-dm-sans)] text-[var(--color-text-muted)] text-sm mt-1">
           {product.material}
         </p>
-        <div className="flex items-center justify-between mt-3">
-          <span className="font-[family-name:var(--font-dm-sans)] font-medium text-[var(--color-text)]">
+        <div className="flex flex-col gap-2 mt-3 sm:flex-row sm:items-center sm:justify-between">
+          <span className="font-[family-name:var(--font-dm-sans)] font-medium text-[var(--color-text)] text-sm sm:text-base">
             {product.price.toLocaleString("fr-FR")} {product.currency}
           </span>
           <a
             href={getProductOrderLink(product.name)}
             target="_blank"
             rel="noopener noreferrer"
-            className="font-[family-name:var(--font-dm-sans)] text-xs tracking-widest uppercase border border-[var(--color-text)] px-4 py-2 hover:bg-[var(--color-text)] hover:text-white transition-all duration-200"
+            className="font-[family-name:var(--font-dm-sans)] text-xs tracking-widest uppercase border border-[var(--color-text)] px-3 py-1.5 sm:px-4 sm:py-2 hover:bg-[var(--color-text)] hover:text-white transition-all duration-200 text-center"
             aria-label={`Commander ${product.name}`}
           >
             {t("product.order")}

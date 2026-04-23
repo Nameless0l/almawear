@@ -43,7 +43,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
       {/* Products grid */}
       <motion.div
         layout
-        className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-8"
+        className="grid grid-cols-2 lg:grid-cols-3 gap-x-3 gap-y-8 sm:gap-8"
       >
         <AnimatePresence mode="popLayout">
           {filtered.map((product) => (
