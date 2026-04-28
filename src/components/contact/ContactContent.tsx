@@ -83,7 +83,7 @@ export function ContactContent() {
                   </h3>
                 </div>
                 <p className="font-[family-name:var(--font-dm-sans)] text-[var(--color-text-muted)]">
-                  +33 7 59 52 33 98
+                  {(process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "").replace("+", "")}
                 </p>
               </div>
             </AnimatedSection>
@@ -97,7 +97,7 @@ export function ContactContent() {
                   </h3>
                 </div>
                 <p className="font-[family-name:var(--font-dm-sans)] text-[var(--color-text-muted)]">
-                  contact@almawear.cm
+                  {process.env.NEXT_PUBLIC_EMAIL || ""}
                 </p>
               </div>
             </AnimatedSection>
@@ -142,7 +142,10 @@ export function ContactContent() {
                   </h3>
                 </div>
                 <p className="font-[family-name:var(--font-dm-sans)] text-[var(--color-text-muted)]">
-                  {t("orderInfo.deliveryValue")}
+                  {t("orderInfo.deliveryValueInCameroun")}
+                </p>
+                <p className="font-[family-name:var(--font-dm-sans)] text-[var(--color-text-muted)]">
+                  {t("orderInfo.deliveryValueH")}
                 </p>
                 <p className="font-[family-name:var(--font-dm-sans)] text-[var(--color-text-muted)] text-sm mt-1">
                   {t("orderInfo.deliveryCustom")}
@@ -163,9 +166,6 @@ export function ContactContent() {
                 </p>
                 <p className="font-[family-name:var(--font-dm-sans)] text-[var(--color-text-muted)]">
                   MTN Mobile Money
-                </p>
-                <p className="font-[family-name:var(--font-dm-sans)] text-[var(--color-text-muted)]">
-                  Virement bancaire
                 </p>
               </div>
             </AnimatedSection>
