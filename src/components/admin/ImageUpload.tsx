@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import { Upload, X, ImageIcon } from "lucide-react";
+import imageCompression from "browser-image-compression";
 import { getAuthHeader } from "./AdminGuard";
 
 interface ImageUploadProps {
@@ -10,25 +11,61 @@ interface ImageUploadProps {
   onChange: (url: string) => void;
 }
 
+// Compresse l'image côté client (Web Worker, WebP) pour éviter les timeouts Vercel Hobby
+async function compressImage(file: File): Promise<File> {
+  // Pas de compression pour les très petits fichiers (< 200 Ko)
+  if (file.size < 200 * 1024) return file;
+
+  try {
+    const compressed = await imageCompression(file, {
+      maxSizeMB: 1,              // cible : 1 Mo max
+      maxWidthOrHeight: 1600,    // dimension max (préserve le ratio)
+      useWebWorker: true,        // ne bloque pas l'UI
+      fileType: "image/webp",    // ~30% plus léger que JPEG à qualité égale
+      initialQuality: 0.85,      // qualité visuelle haute
+      preserveExif: false,       // supprime EXIF (poids + vie privée)
+    });
+
+    // Si la compression a grossi le fichier, on garde l'original
+    if (compressed.size >= file.size) return file;
+
+    // Renomme avec l'extension qui correspond au vrai type (webp)
+    const renamed = new File(
+      [compressed],
+      file.name.replace(/\.[^.]+$/, "") + ".webp",
+      { type: "image/webp", lastModified: Date.now() },
+    );
+    return renamed;
+  } catch (e) {
+    console.warn("[ImageUpload] Compression échouée, envoi de l'original :", e);
+    return file;
+  }
+}
+
 export function ImageUpload({ value, onChange }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState("");
   const [error, setError] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
-  async function handleFile(file: File) {
-    if (!file.type.startsWith("image/")) {
+  async function handleFile(rawFile: File) {
+    if (!rawFile.type.startsWith("image/")) {
       setError("Seules les images sont acceptées.");
       return;
     }
-    if (file.size > 8 * 1024 * 1024) {
-      setError("Fichier trop volumineux (max 8 Mo).");
+    if (rawFile.size > 20 * 1024 * 1024) {
+      setError("Fichier trop volumineux (max 20 Mo).");
       return;
     }
 
     setError("");
     setUploading(true);
+    setProgress("Compression de l'image…");
 
     try {
+      const file = await compressImage(rawFile);
+      setProgress("Envoi…");
+
       const formData = new FormData();
       formData.append("file", file);
       const res = await fetch("/api/upload", {
@@ -36,13 +73,27 @@ export function ImageUpload({ value, onChange }: ImageUploadProps) {
         headers: { authorization: getAuthHeader() },
         body: formData,
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Erreur upload");
+
+      // Lecture sécurisée : si Vercel renvoie du HTML (504…), on évite le crash JSON
+      const text = await res.text();
+      let data: { url?: string; error?: string } = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        throw new Error(
+          res.status === 504
+            ? "Upload trop long — réduisez la taille de l'image"
+            : `Erreur serveur (${res.status})`,
+        );
+      }
+      if (!res.ok) throw new Error(data.error ?? `Erreur ${res.status}`);
+      if (!data.url) throw new Error("URL d'image manquante");
       onChange(data.url);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Erreur lors de l'upload");
     } finally {
       setUploading(false);
+      setProgress("");
     }
   }
 
@@ -75,7 +126,7 @@ export function ImageUpload({ value, onChange }: ImageUploadProps) {
           {uploading ? (
             <div className="flex flex-col items-center gap-2 text-[var(--color-text-muted)]">
               <div className="w-6 h-6 border-2 border-[var(--color-accent)] border-t-transparent rounded-full animate-spin" />
-              <p className="text-sm font-[family-name:var(--font-dm-sans)]">Upload en cours…</p>
+              <p className="text-sm font-[family-name:var(--font-dm-sans)]">{progress || "Upload en cours…"}</p>
             </div>
           ) : (
             <div className="flex flex-col items-center gap-3 text-[var(--color-text-muted)]">
@@ -87,7 +138,10 @@ export function ImageUpload({ value, onChange }: ImageUploadProps) {
                   Glissez une image ici
                 </p>
                 <p className="font-[family-name:var(--font-dm-sans)] text-xs mt-1">
-                  ou cliquez pour sélectionner · JPG, PNG · max 8 Mo
+                  ou cliquez pour sélectionner · JPG, PNG · max 20 Mo
+                </p>
+                <p className="font-[family-name:var(--font-dm-sans)] text-[10px] mt-1 text-[var(--color-text-muted)]">
+                  L'image sera automatiquement optimisée
                 </p>
               </div>
             </div>

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { put } from "@vercel/blob";
 
+export const maxDuration = 30;
+
 function checkAuth(req: NextRequest): boolean {
   const auth = req.headers.get("authorization");
   return auth === `Bearer alma-admin-${process.env.ADMIN_PASSWORD}`;
@@ -23,8 +25,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Aucun fichier fourni" }, { status: 400 });
   }
 
-  if (file.size > 8 * 1024 * 1024) {
-    return NextResponse.json({ error: "Fichier trop volumineux (max 8 Mo)" }, { status: 400 });
+  if (file.size > 10 * 1024 * 1024) {
+    return NextResponse.json({ error: "Fichier trop volumineux après compression (max 10 Mo)" }, { status: 400 });
   }
 
   const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";

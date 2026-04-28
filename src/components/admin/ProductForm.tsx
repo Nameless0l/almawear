@@ -112,8 +112,20 @@ export function ProductForm({
         body: JSON.stringify(product),
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Erreur");
+      // Lecture sécurisée : si Vercel renvoie du HTML (504, 502…), on lit en texte
+      const text = await res.text();
+      let data: { error?: string } = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        // Réponse non-JSON (timeout Vercel, erreur réseau)
+        throw new Error(
+          res.status === 504
+            ? "Délai dépassé — réessayez (image trop lourde ?)"
+            : `Erreur serveur (${res.status})`,
+        );
+      }
+      if (!res.ok) throw new Error(data.error ?? `Erreur ${res.status}`);
 
       setFeedback({ type: "success", msg: mode === "edit" ? "Produit mis à jour !" : "Produit créé !" });
       setTimeout(() => router.push("/admin/produits"), 1200);

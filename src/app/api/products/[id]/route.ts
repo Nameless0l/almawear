@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getProducts, saveProducts } from "@/lib/products-data";
 import { type Product } from "@/data/products";
 
+export const maxDuration = 30;
+
 function checkAuth(req: NextRequest): boolean {
   const auth = req.headers.get("authorization");
   return auth === `Bearer alma-admin-${process.env.ADMIN_PASSWORD}`;

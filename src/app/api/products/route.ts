@@ -4,6 +4,7 @@ import { type Product } from "@/data/products";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+export const maxDuration = 30;
 
 function checkAuth(req: NextRequest): boolean {
   const auth = req.headers.get("authorization");
