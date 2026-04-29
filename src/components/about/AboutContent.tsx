@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { useLanguage } from "@/lib/i18n";
+import type { AboutPageContent } from "@/lib/settings-data";
 
 const valueIcons = [Fingerprint, Gem, Sparkles, Heart, Lightbulb, Leaf];
 const valueKeys = [
@@ -25,8 +26,24 @@ const valueKeys = [
   "sustainability",
 ] as const;
 
-export function AboutContent() {
-  const { t } = useLanguage();
+export function AboutContent({ content }: { content?: AboutPageContent }) {
+  const { t, locale } = useLanguage();
+
+  const pick = (
+    field: keyof Omit<AboutPageContent, "heroImage" | "storyImage">,
+    fallbackKey: string,
+  ) => content?.[field]?.[locale]?.trim() || t(fallbackKey);
+
+  const heroImage = content?.heroImage || "/images/hero/lookbook-image.png";
+  const storyImage = content?.storyImage || "/images/hero/christ.png";
+  const subtitle = pick("subtitle", "about.subtitle");
+  const title = pick("title", "about.title");
+  const storyTitle1 = pick("storyTitle1", "about.storyTitle1");
+  const storyTitle2 = pick("storyTitle2", "about.storyTitle2");
+  const p1 = pick("p1", "about.p1");
+  const p2 = pick("p2", "about.p2");
+  const quote = pick("quote", "about.quote");
+  const author = pick("author", "about.author");
 
   const values = valueKeys.map((key, i) => ({
     icon: valueIcons[i],
@@ -40,16 +57,16 @@ export function AboutContent() {
       <section className="relative h-[60vh] min-h-[400px] overflow-hidden bg-[var(--color-dark)]">
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: "url('/images/hero/lookbook-image.png')" }}
+          style={{ backgroundImage: `url('${heroImage}')` }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#1a1714]/50 via-[#1a1714]/30 to-[#1a1714]/60" />
 
         <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center px-4">
           <p className="font-[family-name:var(--font-dm-sans)] text-sm tracking-[0.3em] uppercase mb-4 opacity-80">
-            {t("about.subtitle")}
+            {subtitle}
           </p>
           <h1 className="font-[family-name:var(--font-cormorant)] text-5xl md:text-7xl font-light italic">
-            {t("about.title")}
+            {title}
           </h1>
         </div>
       </section>
@@ -61,7 +78,7 @@ export function AboutContent() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               <div className="relative aspect-[4/5] overflow-hidden bg-[var(--color-surface)]">
                 <Image
-                  src="/images/hero/christ.png"
+                  src={storyImage}
                   alt="Fondatrice Alma Wear"
                   fill
                   className="object-cover"
@@ -71,22 +88,22 @@ export function AboutContent() {
 
               <div>
                 <h2 className="font-[family-name:var(--font-cormorant)] text-3xl md:text-4xl font-light text-[var(--color-text)] mb-8">
-                  {t("about.storyTitle1")}
+                  {storyTitle1}
                   <br />
-                  <em>{t("about.storyTitle2")}</em>
+                  <em>{storyTitle2}</em>
                 </h2>
 
                 <div className="space-y-6 font-[family-name:var(--font-dm-sans)] text-[var(--color-text-muted)] leading-relaxed">
-                  <p>{t("about.p1")}</p>
-                  <p>{t("about.p2")}</p>
+                  <p>{p1}</p>
+                  <p>{p2}</p>
                 </div>
 
                 <blockquote className="mt-10 pl-6 border-l-2 border-[var(--color-accent)]">
                   <p className="font-[family-name:var(--font-cormorant)] text-2xl font-light italic text-[var(--color-text)]">
-                    &ldquo;{t("about.quote")}&rdquo;
+                    &ldquo;{quote}&rdquo;
                   </p>
                   <cite className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--color-text-muted)] mt-3 block not-italic">
-                    {t("about.author")}
+                    {author}
                   </cite>
                 </blockquote>
               </div>

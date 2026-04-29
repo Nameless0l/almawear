@@ -15,10 +15,10 @@ export default async function Home() {
 
   return (
     <>
-      <HeroSection />
+      <HeroSection hero={settings.hero} />
       <FeaturedProducts products={featured} />
       <CollectionsSection images={settings.collectionImages} />
-      <BrandStory />
+      <BrandStory content={settings.brandStory} />
       <Lookbook images={settings.lookbook} />
       <WhatsAppBanner />
     </>

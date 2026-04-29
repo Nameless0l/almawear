@@ -6,6 +6,43 @@ export type LookbookImage = {
   span: string;
 };
 
+/**
+ * Bloc de texte FR/EN. Si vide, le composant utilise la traduction i18n par défaut.
+ */
+export type Bilingual = { fr: string; en: string };
+
+export type HeroContent = {
+  image: string;
+  // Si laissés vides → fallback sur les traductions i18n (hero.location/title/subtitle)
+  location: Bilingual;
+  title: Bilingual;
+  subtitle: Bilingual;
+};
+
+export type BrandStoryContent = {
+  image: string;
+  subtitle: Bilingual;
+  title1: Bilingual;
+  title2: Bilingual;
+  p1: Bilingual;
+  p2: Bilingual;
+  quote: Bilingual;
+  author: Bilingual;
+};
+
+export type AboutPageContent = {
+  heroImage: string;
+  storyImage: string;
+  subtitle: Bilingual;
+  title: Bilingual;
+  storyTitle1: Bilingual;
+  storyTitle2: Bilingual;
+  p1: Bilingual;
+  p2: Bilingual;
+  quote: Bilingual;
+  author: Bilingual;
+};
+
 export type SiteSettings = {
   lookbook: LookbookImage[];
   collectionImages: {
@@ -13,9 +50,14 @@ export type SiteSettings = {
     homme: string;
     accessoire: string;
   };
+  hero: HeroContent;
+  brandStory: BrandStoryContent;
+  aboutPage: AboutPageContent;
 };
 
 const SETTINGS_FILE = "alma-settings.json";
+
+const empty: Bilingual = { fr: "", en: "" };
 
 export const defaultSettings: SiteSettings = {
   lookbook: [
@@ -43,6 +85,34 @@ export const defaultSettings: SiteSettings = {
     homme: "/images/products/_alma_wear_1771499218303.jpeg",
     accessoire: "/images/products/kaftan-rose-bleu-1.png",
   },
+  hero: {
+    image: "/images/hero/_alma_wear_1771498601526.jpeg",
+    location: empty,
+    title: empty,
+    subtitle: empty,
+  },
+  brandStory: {
+    image: "/images/hero/lookbook-image.png",
+    subtitle: empty,
+    title1: empty,
+    title2: empty,
+    p1: empty,
+    p2: empty,
+    quote: empty,
+    author: empty,
+  },
+  aboutPage: {
+    heroImage: "/images/hero/lookbook-image.png",
+    storyImage: "/images/hero/christ.png",
+    subtitle: empty,
+    title: empty,
+    storyTitle1: empty,
+    storyTitle2: empty,
+    p1: empty,
+    p2: empty,
+    quote: empty,
+    author: empty,
+  },
 };
 
 function getBlobBaseUrl(): string | null {
@@ -51,6 +121,23 @@ function getBlobBaseUrl(): string | null {
   const storeId = token.split("_")[3]?.toLowerCase();
   if (!storeId) return null;
   return `https://${storeId}.public.blob.vercel-storage.com`;
+}
+
+/**
+ * Merge defensif : pour chaque champ neuf (hero, brandStory, aboutPage),
+ * complète avec les defaults si la prop manque dans le Blob existant.
+ */
+function mergeWithDefaults(data: Partial<SiteSettings>): SiteSettings {
+  return {
+    lookbook: data.lookbook ?? defaultSettings.lookbook,
+    collectionImages: {
+      ...defaultSettings.collectionImages,
+      ...data.collectionImages,
+    },
+    hero: { ...defaultSettings.hero, ...data.hero },
+    brandStory: { ...defaultSettings.brandStory, ...data.brandStory },
+    aboutPage: { ...defaultSettings.aboutPage, ...data.aboutPage },
+  };
 }
 
 export async function getSettings(): Promise<SiteSettings> {
@@ -63,13 +150,7 @@ export async function getSettings(): Promise<SiteSettings> {
     console.log(`[Settings] GET ${url} → ${res.status}`);
     if (res.ok) {
       const data = (await res.json()) as Partial<SiteSettings>;
-      return {
-        lookbook: data.lookbook ?? defaultSettings.lookbook,
-        collectionImages: {
-          ...defaultSettings.collectionImages,
-          ...data.collectionImages,
-        },
-      };
+      return mergeWithDefaults(data);
     }
   } catch (e) {
     console.error("[Settings] Fetch error:", e);

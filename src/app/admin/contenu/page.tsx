@@ -2,10 +2,16 @@
 
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
-import { X, Upload, ImageIcon, Check, AlertCircle, Loader2, Info } from "lucide-react";
+import { X, Check, AlertCircle, Loader2, Info, ImageIcon, Save } from "lucide-react";
 import { AdminGuard, getAuthHeader } from "@/components/admin/AdminGuard";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
-import { type SiteSettings, defaultSettings } from "@/lib/settings-data";
+import { ContentImageUpload } from "@/components/admin/ContentImageUpload";
+import { BilingualField } from "@/components/admin/BilingualField";
+import { uploadImageToBlob } from "@/lib/image-compression";
+import {
+  type SiteSettings,
+  defaultSettings,
+} from "@/lib/settings-data";
 
 type Feedback = { type: "success" | "error"; msg: string };
 
@@ -16,9 +22,6 @@ export default function AdminContent() {
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [uploading, setUploading] = useState(false);
   const lookbookInputRef = useRef<HTMLInputElement>(null);
-  const femmeInputRef    = useRef<HTMLInputElement>(null);
-  const hommeInputRef    = useRef<HTMLInputElement>(null);
-  const accessoireInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetch("/api/settings")
@@ -27,34 +30,32 @@ export default function AdminContent() {
       .finally(() => setLoading(false));
   }, []);
 
-  async function uploadImage(file: File): Promise<string | null> {
-    const formData = new FormData();
-    formData.append("file", file);
-    const res = await fetch("/api/upload", {
-      method: "POST",
-      headers: { authorization: getAuthHeader() },
-      body: formData,
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data.url as string;
-  }
-
   async function save(next: SiteSettings) {
     setSaving(true);
     setFeedback(null);
-    const res = await fetch("/api/settings", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json", authorization: getAuthHeader() },
-      body: JSON.stringify(next),
-    });
-    setSaving(false);
-    if (res.ok) {
+    try {
+      const res = await fetch("/api/settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", authorization: getAuthHeader() },
+        body: JSON.stringify(next),
+      });
+      const text = await res.text();
+      let data: { error?: string } = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        throw new Error(`Erreur serveur (${res.status})`);
+      }
+      if (!res.ok) throw new Error(data.error ?? "Erreur de sauvegarde");
       setFeedback({ type: "success", msg: "Modifications enregistrées !" });
       setTimeout(() => setFeedback(null), 3000);
-    } else {
-      const d = await res.json();
-      setFeedback({ type: "error", msg: d.error ?? "Erreur de sauvegarde" });
+    } catch (e) {
+      setFeedback({
+        type: "error",
+        msg: e instanceof Error ? e.message : "Erreur",
+      });
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -64,15 +65,22 @@ export default function AdminContent() {
     if (!files || files.length === 0) return;
     setUploading(true);
     const urls: string[] = [];
-    for (const file of Array.from(files)) {
-      const url = await uploadImage(file);
-      if (url) urls.push(url);
-    }
-    setUploading(false);
-    if (urls.length === 0) {
-      setFeedback({ type: "error", msg: "Échec de l'upload. Vérifiez la connexion." });
+    try {
+      for (const file of Array.from(files)) {
+        const url = await uploadImageToBlob(file, getAuthHeader());
+        urls.push(url);
+      }
+    } catch (e) {
+      setFeedback({
+        type: "error",
+        msg: e instanceof Error ? e.message : "Échec de l'upload",
+      });
+      setUploading(false);
       return;
     }
+    setUploading(false);
+    if (urls.length === 0) return;
+
     const next: SiteSettings = {
       ...settings,
       lookbook: [
@@ -97,52 +105,43 @@ export default function AdminContent() {
     save(next);
   }
 
-  // ── COLLECTION IMAGES ────────────────────────────────────────────────────
+  // ── HELPERS POUR MAJ + SAUVEGARDE ────────────────────────────────────────
 
-  async function handleCollectionImage(key: keyof SiteSettings["collectionImages"], file: File) {
-    setUploading(true);
-    const url = await uploadImage(file);
-    setUploading(false);
-    if (!url) {
-      setFeedback({ type: "error", msg: "Échec de l'upload." });
-      return;
-    }
-    const next: SiteSettings = {
-      ...settings,
-      collectionImages: { ...settings.collectionImages, [key]: url },
-    };
+  function updateAndSave(next: SiteSettings) {
     setSettings(next);
-    await save(next);
+    return save(next);
   }
 
-  const collectionCards = [
-    { key: "femme" as const,      label: "Femme",       ref: femmeInputRef },
-    { key: "homme" as const,      label: "Homme",       ref: hommeInputRef },
-    { key: "accessoire" as const, label: "Accessoires", ref: accessoireInputRef },
-  ];
+  // Pour les champs texte : on attend que l'user clique "Enregistrer la section"
+  // pour limiter les writes Blob (1 par modification serait excessif)
+  function updateLocal(next: SiteSettings) {
+    setSettings(next);
+  }
 
   return (
     <AdminGuard>
       <AdminSidebar />
       <main className="flex-1 min-w-0 p-4 pt-20 sm:p-6 sm:pt-24 md:p-8 md:pt-28 overflow-y-auto">
-        <div className="max-w-4xl mx-auto space-y-12">
+        <div className="max-w-5xl mx-auto space-y-12">
           {/* Header */}
           <div>
             <h1 className="font-[family-name:var(--font-cormorant)] text-3xl font-light text-[var(--color-text)]">
               Gestion du contenu
             </h1>
             <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--color-text-muted)] mt-1">
-              Lookbook et images des collections visibles sur la page d&apos;accueil.
+              Modifiez les images et textes affichés sur le site public.
             </p>
           </div>
 
           {/* Feedback global */}
           {feedback && (
-            <div className={`flex items-center gap-2 px-4 py-3 text-sm font-[family-name:var(--font-dm-sans)] ${
-              feedback.type === "success"
-                ? "bg-green-50 text-green-700 border border-green-200"
-                : "bg-red-50 text-red-700 border border-red-200"
-            }`}>
+            <div
+              className={`flex items-center gap-2 px-4 py-3 text-sm font-[family-name:var(--font-dm-sans)] sticky top-4 z-10 ${
+                feedback.type === "success"
+                  ? "bg-green-50 text-green-700 border border-green-200"
+                  : "bg-red-50 text-red-700 border border-red-200"
+              }`}
+            >
               {feedback.type === "success" ? <Check size={14} /> : <AlertCircle size={14} />}
               {feedback.msg}
             </div>
@@ -155,30 +154,353 @@ export default function AdminContent() {
             </div>
           ) : (
             <>
-              {/* ── LOOKBOOK ─────────────────────────────────────── */}
-              <section className="bg-white border border-[var(--color-border)] p-6">
-                <div className="flex items-start justify-between mb-1">
-                  <h2 className="font-[family-name:var(--font-dm-sans)] font-medium text-[var(--color-text)]">
-                    Photos du Lookbook
-                  </h2>
-                  {saving && <Loader2 size={16} className="text-[var(--color-accent)] animate-spin" />}
-                </div>
+              {/* ──── HERO (PAGE D'ACCUEIL) ──────────────────────────── */}
+              <Section title="Hero — Page d'accueil" saving={saving}>
                 <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--color-text-muted)] mb-5 flex items-start gap-1.5">
                   <Info size={14} className="shrink-0 mt-0.5" />
-                  La 1ère photo s&apos;affiche en grand, les autres en format standard.
-                  Cliquez la croix pour supprimer une photo.
+                  Image en plein écran sur la page d&apos;accueil. Format paysage 16:9 recommandé.
                 </p>
 
-                {/* Grid of current images */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <ContentImageUpload
+                    label="Image de fond"
+                    value={settings.hero.image}
+                    aspectRatio="16/9"
+                    recommendedSize="1920 × 1080 px"
+                    hint="Photo lifestyle pleine largeur. Le texte sera affiché par-dessus."
+                    onChange={async (url) => {
+                      await updateAndSave({
+                        ...settings,
+                        hero: { ...settings.hero, image: url },
+                      });
+                    }}
+                  />
+
+                  <div className="space-y-4">
+                    <BilingualField
+                      label="Petite ligne (au-dessus du titre)"
+                      value={settings.hero.location}
+                      onChange={(v) =>
+                        updateLocal({
+                          ...settings,
+                          hero: { ...settings.hero, location: v },
+                        })
+                      }
+                      placeholderFr="Douala, Cameroun"
+                      placeholderEn="Douala, Cameroon"
+                      hint="Laissez vide pour utiliser la valeur par défaut"
+                    />
+                    <BilingualField
+                      label="Titre principal (en italique)"
+                      value={settings.hero.title}
+                      onChange={(v) =>
+                        updateLocal({
+                          ...settings,
+                          hero: { ...settings.hero, title: v },
+                        })
+                      }
+                      placeholderFr="L'élégance à l'africaine"
+                      placeholderEn="African elegance"
+                    />
+                    <BilingualField
+                      label="Sous-titre"
+                      value={settings.hero.subtitle}
+                      onChange={(v) =>
+                        updateLocal({
+                          ...settings,
+                          hero: { ...settings.hero, subtitle: v },
+                        })
+                      }
+                      rows={2}
+                      placeholderFr="Des créations uniques…"
+                      placeholderEn="Unique creations…"
+                    />
+                    <SaveButton onClick={() => save(settings)} disabled={saving} />
+                  </div>
+                </div>
+              </Section>
+
+              {/* ──── SECTION HISTOIRE (HOME) ──────────────────────────── */}
+              <Section title="Notre Histoire — Page d'accueil" saving={saving}>
+                <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--color-text-muted)] mb-5 flex items-start gap-1.5">
+                  <Info size={14} className="shrink-0 mt-0.5" />
+                  Section qui présente la marque sur la page d&apos;accueil (image + texte).
+                </p>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <ContentImageUpload
+                    label="Image de la section"
+                    value={settings.brandStory.image}
+                    aspectRatio="4/5"
+                    recommendedSize="1200 × 1500 px"
+                    hint="Format portrait. Photo lifestyle, atelier ou détail textile."
+                    onChange={async (url) => {
+                      await updateAndSave({
+                        ...settings,
+                        brandStory: { ...settings.brandStory, image: url },
+                      });
+                    }}
+                  />
+
+                  <div className="space-y-4">
+                    <BilingualField
+                      label="Sous-titre (au-dessus du titre)"
+                      value={settings.brandStory.subtitle}
+                      onChange={(v) =>
+                        updateLocal({
+                          ...settings,
+                          brandStory: { ...settings.brandStory, subtitle: v },
+                        })
+                      }
+                      placeholderFr="Notre Histoire"
+                      placeholderEn="Our Story"
+                    />
+                    <BilingualField
+                      label="Titre — partie 1"
+                      value={settings.brandStory.title1}
+                      onChange={(v) =>
+                        updateLocal({
+                          ...settings,
+                          brandStory: { ...settings.brandStory, title1: v },
+                        })
+                      }
+                      placeholderFr="La puissance de la mode"
+                    />
+                    <BilingualField
+                      label="Titre — partie 2 (en italique)"
+                      value={settings.brandStory.title2}
+                      onChange={(v) =>
+                        updateLocal({
+                          ...settings,
+                          brandStory: { ...settings.brandStory, title2: v },
+                        })
+                      }
+                      placeholderFr="africaine"
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-6 space-y-4">
+                  <BilingualField
+                    label="Paragraphe 1"
+                    value={settings.brandStory.p1}
+                    onChange={(v) =>
+                      updateLocal({
+                        ...settings,
+                        brandStory: { ...settings.brandStory, p1: v },
+                      })
+                    }
+                    rows={4}
+                  />
+                  <BilingualField
+                    label="Paragraphe 2"
+                    value={settings.brandStory.p2}
+                    onChange={(v) =>
+                      updateLocal({
+                        ...settings,
+                        brandStory: { ...settings.brandStory, p2: v },
+                      })
+                    }
+                    rows={4}
+                  />
+                  <BilingualField
+                    label="Citation"
+                    value={settings.brandStory.quote}
+                    onChange={(v) =>
+                      updateLocal({
+                        ...settings,
+                        brandStory: { ...settings.brandStory, quote: v },
+                      })
+                    }
+                    rows={2}
+                  />
+                  <BilingualField
+                    label="Auteur de la citation"
+                    value={settings.brandStory.author}
+                    onChange={(v) =>
+                      updateLocal({
+                        ...settings,
+                        brandStory: { ...settings.brandStory, author: v },
+                      })
+                    }
+                    placeholderFr="— Fondatrice, Alma Wear"
+                  />
+                  <SaveButton onClick={() => save(settings)} disabled={saving} />
+                </div>
+              </Section>
+
+              {/* ──── PAGE À PROPOS ──────────────────────────────────── */}
+              <Section title="Page À Propos" saving={saving}>
+                <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--color-text-muted)] mb-5 flex items-start gap-1.5">
+                  <Info size={14} className="shrink-0 mt-0.5" />
+                  Contenu de la page <code className="bg-[var(--color-surface)] px-1 text-xs">/a-propos</code>.
+                </p>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                  <ContentImageUpload
+                    label="Image de la bannière (haut de page)"
+                    value={settings.aboutPage.heroImage}
+                    aspectRatio="16/9"
+                    recommendedSize="1920 × 1080 px"
+                    hint="Bannière en haut de la page À Propos. Format paysage."
+                    onChange={async (url) => {
+                      await updateAndSave({
+                        ...settings,
+                        aboutPage: { ...settings.aboutPage, heroImage: url },
+                      });
+                    }}
+                  />
+                  <ContentImageUpload
+                    label="Image de la fondatrice / atelier"
+                    value={settings.aboutPage.storyImage}
+                    aspectRatio="4/5"
+                    recommendedSize="1200 × 1500 px"
+                    hint="Format portrait. Photo de la fondatrice ou de l'atelier."
+                    onChange={async (url) => {
+                      await updateAndSave({
+                        ...settings,
+                        aboutPage: { ...settings.aboutPage, storyImage: url },
+                      });
+                    }}
+                  />
+                </div>
+
+                <div className="space-y-4">
+                  <BilingualField
+                    label="Sous-titre de la bannière"
+                    value={settings.aboutPage.subtitle}
+                    onChange={(v) =>
+                      updateLocal({
+                        ...settings,
+                        aboutPage: { ...settings.aboutPage, subtitle: v },
+                      })
+                    }
+                    placeholderFr="Notre Histoire"
+                  />
+                  <BilingualField
+                    label="Titre de la bannière (en italique)"
+                    value={settings.aboutPage.title}
+                    onChange={(v) =>
+                      updateLocal({
+                        ...settings,
+                        aboutPage: { ...settings.aboutPage, title: v },
+                      })
+                    }
+                    placeholderFr="L'âme d'Alma"
+                  />
+                  <BilingualField
+                    label="Titre histoire — partie 1"
+                    value={settings.aboutPage.storyTitle1}
+                    onChange={(v) =>
+                      updateLocal({
+                        ...settings,
+                        aboutPage: { ...settings.aboutPage, storyTitle1: v },
+                      })
+                    }
+                  />
+                  <BilingualField
+                    label="Titre histoire — partie 2 (en italique)"
+                    value={settings.aboutPage.storyTitle2}
+                    onChange={(v) =>
+                      updateLocal({
+                        ...settings,
+                        aboutPage: { ...settings.aboutPage, storyTitle2: v },
+                      })
+                    }
+                  />
+                  <BilingualField
+                    label="Paragraphe 1"
+                    value={settings.aboutPage.p1}
+                    onChange={(v) =>
+                      updateLocal({
+                        ...settings,
+                        aboutPage: { ...settings.aboutPage, p1: v },
+                      })
+                    }
+                    rows={4}
+                  />
+                  <BilingualField
+                    label="Paragraphe 2"
+                    value={settings.aboutPage.p2}
+                    onChange={(v) =>
+                      updateLocal({
+                        ...settings,
+                        aboutPage: { ...settings.aboutPage, p2: v },
+                      })
+                    }
+                    rows={4}
+                  />
+                  <BilingualField
+                    label="Citation"
+                    value={settings.aboutPage.quote}
+                    onChange={(v) =>
+                      updateLocal({
+                        ...settings,
+                        aboutPage: { ...settings.aboutPage, quote: v },
+                      })
+                    }
+                    rows={2}
+                  />
+                  <BilingualField
+                    label="Auteur de la citation"
+                    value={settings.aboutPage.author}
+                    onChange={(v) =>
+                      updateLocal({
+                        ...settings,
+                        aboutPage: { ...settings.aboutPage, author: v },
+                      })
+                    }
+                  />
+                  <SaveButton onClick={() => save(settings)} disabled={saving} />
+                </div>
+              </Section>
+
+              {/* ──── COLLECTION IMAGES ────────────────────────────── */}
+              <Section title="Tuiles Collections — Page d'accueil" saving={saving}>
+                <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--color-text-muted)] mb-5 flex items-start gap-1.5">
+                  <Info size={14} className="shrink-0 mt-0.5" />
+                  Les 3 tuiles de la section &quot;Nos Collections&quot;. Format paysage.
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {(["femme", "homme", "accessoire"] as const).map((key) => (
+                    <ContentImageUpload
+                      key={key}
+                      label={key === "accessoire" ? "Accessoires" : key.charAt(0).toUpperCase() + key.slice(1)}
+                      value={settings.collectionImages[key]}
+                      aspectRatio="4/3"
+                      recommendedSize="1200 × 900 px"
+                      onChange={async (url) => {
+                        await updateAndSave({
+                          ...settings,
+                          collectionImages: { ...settings.collectionImages, [key]: url },
+                        });
+                      }}
+                    />
+                  ))}
+                </div>
+              </Section>
+
+              {/* ──── LOOKBOOK ──────────────────────────────────────── */}
+              <Section title="Lookbook — Page d'accueil" saving={saving}>
+                <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--color-text-muted)] mb-5 flex items-start gap-1.5">
+                  <Info size={14} className="shrink-0 mt-0.5" />
+                  Galerie en mosaïque. Format portrait 3:4 (1200 × 1600 px).
+                  La 1ère photo s&apos;affiche en grand.
+                </p>
+
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-4">
                   {settings.lookbook.map((img, i) => (
-                    <div key={i} className="relative group aspect-[3/4] bg-[var(--color-surface)] overflow-hidden">
+                    <div
+                      key={i}
+                      className="relative group aspect-[3/4] bg-[var(--color-surface)] overflow-hidden border border-[var(--color-border)]"
+                    >
                       <Image
                         src={img.url}
                         alt={img.alt}
                         fill
                         className="object-cover"
-                        sizes="150px"
+                        sizes="200px"
                       />
                       {i === 0 && (
                         <span className="absolute top-1 left-1 bg-[var(--color-accent)] text-white text-[10px] px-1.5 py-0.5 font-[family-name:var(--font-dm-sans)] uppercase tracking-wider">
@@ -195,7 +517,6 @@ export default function AdminContent() {
                     </div>
                   ))}
 
-                  {/* Upload zone */}
                   <button
                     type="button"
                     onClick={() => lookbookInputRef.current?.click()}
@@ -208,7 +529,7 @@ export default function AdminContent() {
                       <>
                         <ImageIcon size={20} />
                         <span className="text-xs font-[family-name:var(--font-dm-sans)] text-center px-2">
-                          Ajouter une photo
+                          Ajouter
                         </span>
                       </>
                     )}
@@ -223,61 +544,7 @@ export default function AdminContent() {
                   className="hidden"
                   onChange={(e) => handleAddLookbook(e.target.files)}
                 />
-              </section>
-
-              {/* ── COLLECTION IMAGES ───────────────────────────── */}
-              <section className="bg-white border border-[var(--color-border)] p-6">
-                <div className="flex items-start justify-between mb-1">
-                  <h2 className="font-[family-name:var(--font-dm-sans)] font-medium text-[var(--color-text)]">
-                    Images des collections
-                  </h2>
-                  {saving && <Loader2 size={16} className="text-[var(--color-accent)] animate-spin" />}
-                </div>
-                <p className="font-[family-name:var(--font-dm-sans)] text-sm text-[var(--color-text-muted)] mb-6 flex items-start gap-1.5">
-                  <Info size={14} className="shrink-0 mt-0.5" />
-                  Ces images illustrent les 3 tuiles de la section &quot;Nos Collections&quot; sur l&apos;accueil.
-                </p>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  {collectionCards.map(({ key, label, ref }) => (
-                    <div key={key} className="space-y-3">
-                      <p className="font-[family-name:var(--font-dm-sans)] text-xs font-medium uppercase tracking-widest text-[var(--color-text-muted)]">
-                        {label}
-                      </p>
-                      <div className="relative aspect-[4/3] bg-[var(--color-surface)] overflow-hidden">
-                        <Image
-                          src={settings.collectionImages[key]}
-                          alt={label}
-                          fill
-                          className="object-cover"
-                          sizes="250px"
-                        />
-                        <div className="absolute inset-0 bg-black/30 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <button
-                            type="button"
-                            onClick={() => ref.current?.click()}
-                            disabled={uploading}
-                            className="flex items-center gap-2 bg-white text-[var(--color-text)] px-3 py-2 text-xs font-[family-name:var(--font-dm-sans)] uppercase tracking-widest hover:bg-[var(--color-accent)] hover:text-white transition-colors"
-                          >
-                            <Upload size={12} />
-                            Changer
-                          </button>
-                        </div>
-                      </div>
-                      <input
-                        ref={ref}
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) handleCollectionImage(key, file);
-                        }}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </section>
+              </Section>
             </>
           )}
         </div>
@@ -285,3 +552,42 @@ export default function AdminContent() {
     </AdminGuard>
   );
 }
+
+// ── COMPOSANTS UI INTERNES ────────────────────────────────────────────────
+
+function Section({
+  title,
+  saving,
+  children,
+}: {
+  title: string;
+  saving: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="bg-white border border-[var(--color-border)] p-6">
+      <div className="flex items-start justify-between mb-3">
+        <h2 className="font-[family-name:var(--font-dm-sans)] font-medium text-[var(--color-text)] text-lg">
+          {title}
+        </h2>
+        {saving && <Loader2 size={16} className="text-[var(--color-accent)] animate-spin" />}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function SaveButton({ onClick, disabled }: { onClick: () => void; disabled: boolean }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className="flex items-center gap-2 bg-[var(--color-dark)] text-white px-5 py-2.5 text-xs tracking-widest uppercase font-[family-name:var(--font-dm-sans)] hover:bg-[var(--color-accent)] transition-colors disabled:opacity-50 mt-2"
+    >
+      {disabled ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+      Enregistrer la section
+    </button>
+  );
+}
+
