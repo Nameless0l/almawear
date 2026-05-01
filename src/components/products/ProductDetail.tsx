@@ -21,11 +21,15 @@ export function ProductDetail({
   similarProducts,
 }: Readonly<ProductDetailProps>) {
   const [selectedSize, setSelectedSize] = useState<string>("");
-  const [selectedColor, setSelectedColor] = useState<string>(
-    product.colors[0] || ""
-  );
+  const [selectedColor, setSelectedColor] = useState<string>("");
   const { t } = useLanguage();
   const orderedSizes = sortProductSizes(product.sizes);
+
+  const hasColors = product.colors.length > 0;
+  const hasSizes = orderedSizes.length > 0;
+  const sizeRequired = hasSizes && !selectedSize;
+  const colorRequired = hasColors && !selectedColor;
+  const canOrder = !sizeRequired && !colorRequired;
 
   const orderLink = getProductOrderLink(
     product.name,
@@ -143,16 +147,37 @@ export function ProductDetail({
             </div>
 
             {/* Order button */}
-            <a
-              href={orderLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full inline-flex items-center justify-center gap-3 bg-[#25D366] text-white px-8 py-4 rounded-sm font-[family-name:var(--font-dm-sans)] text-sm tracking-widest uppercase hover:bg-[#20BD5C] transition-all duration-300 hover:scale-[1.02] shadow-md mb-8"
-              aria-label={`Commander ${product.name} sur WhatsApp`}
-            >
-              <MessageCircle size={20} />
-              {t("product.orderWhatsApp")}
-            </a>
+            {canOrder ? (
+              <a
+                href={orderLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full inline-flex items-center justify-center gap-3 bg-[#25D366] text-white px-8 py-4 rounded-sm font-[family-name:var(--font-dm-sans)] text-sm tracking-widest uppercase hover:bg-[#20BD5C] transition-all duration-300 hover:scale-[1.02] shadow-md mb-2"
+                aria-label={`Commander ${product.name} sur WhatsApp`}
+              >
+                <MessageCircle size={20} />
+                {t("product.orderWhatsApp")}
+              </a>
+            ) : (
+              <button
+                type="button"
+                disabled
+                className="w-full inline-flex items-center justify-center gap-3 bg-gray-300 text-white px-8 py-4 rounded-sm font-[family-name:var(--font-dm-sans)] text-sm tracking-widest uppercase cursor-not-allowed mb-2"
+              >
+                <MessageCircle size={20} />
+                {t("product.orderWhatsApp")}
+              </button>
+            )}
+            {!canOrder && (
+              <p className="text-xs text-[var(--color-text-muted)] font-[family-name:var(--font-dm-sans)] mb-8 text-center">
+                {sizeRequired && colorRequired
+                  ? "Sélectionnez une taille et une couleur"
+                  : sizeRequired
+                  ? "Sélectionnez une taille"
+                  : "Sélectionnez une couleur"}
+              </p>
+            )}
+            {canOrder && <div className="mb-8" />}
 
             {/* Order info strip */}
             <div className="border border-[var(--color-border)] divide-y divide-[var(--color-border)] mb-8">

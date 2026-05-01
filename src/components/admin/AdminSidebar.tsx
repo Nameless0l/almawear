@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, ShoppingBag, Plus, LogOut, ExternalLink, Images, Menu, X } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, Plus, LogOut, ExternalLink, Images, Menu, X, QrCode } from "lucide-react";
 
 const navLinks = [
   { href: "/admin", label: "Tableau de bord", icon: LayoutDashboard },
   { href: "/admin/produits", label: "Produits", icon: ShoppingBag },
   { href: "/admin/produits/nouveau", label: "Ajouter un produit", icon: Plus },
   { href: "/admin/contenu", label: "Contenu du site", icon: Images },
+  { href: "/admin/qr-code", label: "QR Code", icon: QrCode },
 ];
 
 export function AdminSidebar() {

@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Product } from "@/data/products";
-import { getProductOrderLink } from "@/lib/whatsapp";
 import { useLanguage } from "@/lib/i18n";
 
 export function ProductCard({ product }: Readonly<{ product: Product }>) {
@@ -44,15 +43,13 @@ export function ProductCard({ product }: Readonly<{ product: Product }>) {
         <p className="font-[family-name:var(--font-dm-sans)] font-medium text-[var(--color-text)] text-sm mt-2">
           {product.price.toLocaleString("fr-FR")} {product.currency}
         </p>
-        <a
-          href={getProductOrderLink(product.name)}
-          target="_blank"
-          rel="noopener noreferrer"
+        <Link
+          href={`/produits/${product.slug}`}
           className="mt-2 block w-full text-center font-[family-name:var(--font-dm-sans)] text-xs tracking-widest uppercase border border-[var(--color-accent)] bg-[var(--color-accent)] text-[var(--color-dark)] py-2 hover:bg-[var(--color-dark)] hover:border-[var(--color-dark)] hover:text-white transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] focus-visible:ring-offset-2"
-          aria-label={`Commander ${product.name}`}
+          aria-label={`Voir ${product.name}`}
         >
           {t("product.order")}
-        </a>
+        </Link>
       </div>
     </article>
   );
